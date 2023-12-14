@@ -27,6 +27,7 @@
         border-radius: 8px;
     }
     .user-input {
+      resize: none;
         width: 100%;
         padding: 10px;
         margin-bottom: 10px;
@@ -126,32 +127,22 @@
     text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
     text = text.replace(/\_(.*?)\_/g, '<em>$1</em>');
 
-    // Process lists
-    // Match ordered and unordered list items but exclude those followed by more list items
-    text = text.replace(/^( *[\d+\.|\*|\-|\+] .+)(?=\n(?! \d+\.|\*|\-|\+))/gm, '$1\n');
-    // Convert newline sandwiched list items into list elements
-    text = text.replace(/^\s*\n( *\d+\.\s+.+)/gm, '<ol>$1</ol>') // ordered
-               .replace(/^\s*\n([*\-+] .+)/gm, '<ul>$1</ul>') // unordered
-               .replace(/^(\s*\d+\.\s+.+|\s*[*\-+]\s+.+)$/gm, '<li>$1</li>'); // wrap list items in <li>
-    // Clean-up: Replace consecutive <li> open-tags with a single one and likewise for close-tags
-    text = text.replace(/<\/li>\n(<li>)+/g, '</li>\n<li>')
-               .replace(/(<li>)+/g, '<li>')
-               .replace(/(<\/li>)+/g, '</li>');
-
+    // Unordered lists
+    text = text.replace(/(?:^|\n)[\*\+\-] (.+)/gm, '<ul><li>$1</li></ul>');
+    
+    // Convert consecutive list items into a single list
+    text = text.replace(/<\/li><\/ul>\s*<ul><li>/g, '</li><li>');
+    
+    // Ordered lists
+    text = text.replace(/(?:^|\n)(\d+)\. (.+)/gm, '<ol><li>$2</li></ol>');
+    text = text.replace(/<\/li><\/ol>\s*<ol><li>/g, '</li><li>');
+    
     // Replace single newline characters with line break
     text = text.replace(/\n/g, '<br>');
 
-    // Post-process lists to wrap consecutive <li>...</li> items inside <ol> or <ul>
-    text = text.replace(/(<li>.*<\/li>)(<br><li>.*<\/li>)+/g, function(match) {
-        if (/^\d+\./.test(match)) {
-            return '<ol>' + match.replace(/<br>/g, '') + '</ol>';
-        } else {
-            return '<ul>' + match.replace(/<br>/g, '') + '</ul>';
-        }
-    });
-
     return text;
 }
+
 
     function createChatHistoryItem(user, text) {
         let messageClass = user === 'user' ? 'user-msg' : 'model-msg';
@@ -183,9 +174,26 @@
         }
     }
 
-    document.getElementById('clearHistory').addEventListener('click', () => {
-        chatBox.innerHTML = '';
-    });
+    // Function to clear the chat history
+function clearChatHistory() {
+    chatBox.innerHTML = ''; // Clear the chat UI
+    restartChat(); // Restart the chat instance
+}
+
+// Restart the chat with a fresh instance
+function restartChat() {
+    if (API_KEY) {
+        // Initialize chat
+        const genAI = new GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        chat = model.startChat();
+    }
+}
+
+document.getElementById('clearHistory').addEventListener('click', () => {
+    clearChatHistory();
+});
+
 
     document.getElementById('sendMsg').addEventListener('click', () => {
         const msg = userMsg.value.trim();
@@ -261,6 +269,32 @@ function initializeChat() {
         chat = model.startChat();
     }
 }
+     
+     userMsg.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        event.stopPropagation(); // Stop the event from propagating which can trigger a click event on our "Send" button in some cases.
+
+        if (!event.shiftKey) {
+            // If NOT holding shift, add a newline
+            event.preventDefault(); // Prevent the default behavior of sending the message
+
+            // Insert the newline where the cursor is
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            this.value = this.value.slice(0, start) + "\n" + this.value.slice(end);
+            
+            // Move the cursor to right after the inserted "\n"
+            this.selectionStart = this.selectionEnd = start + 1;        
+            
+            // Optionally trigger the 'input' event if you rely on it for other reactiveness
+            this.dispatchEvent(new Event('input'));
+
+        } else {
+            // If holding shift, send the message
+            document.getElementById('sendMsg').click();
+        }
+    }
+});
 </script>
 </body>
 </html>
