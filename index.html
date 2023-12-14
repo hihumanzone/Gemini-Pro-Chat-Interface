@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gemini Pro - Chat Interface</title>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 20px;
+        background-color: #f2f2f2;
+    }
+    .chat-container {
+        background-color: #fff;
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .chat-box {
+        height: 300px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+    }
+    .user-input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    .chat-btn {
+        padding: 10px 20px;
+        cursor: pointer;
+    }
+    .chat-history-item {
+        margin-bottom: 5px;
+        padding: 5px;
+        border-radius: 5px;
+    }
+    .user-msg {
+        background-color: #E1FFC7;
+    }
+    .model-msg {
+        background-color: #C7D8FF;
+    }
+    .api-key-box {
+        margin-bottom: 10px;
+    }
+    .message {
+        padding: 5px;
+        margin-bottom: 5px;
+        border-radius: 5px;
+        position: relative;
+    }
+    .user-msg {
+        background-color: #E1FFC7;
+    }
+    .model-msg {
+        background-color: #C7D8FF;
+    }
+</style>
+</head>
+<body>
+<div class="chat-container">
+    <div class="api-key-box">
+        <label for="apiKey">API Key:</label>
+        <input type="text" id="apiKey" class="user-input">
+    </div>
+    <div class="chat-box" id="chatBox"></div>
+    <textarea id="userMsg" class="user-input" placeholder="Type your message" rows="4"></textarea>
+    <button id="sendMsg" class="chat-btn">Send</button>
+    <button id="clearHistory" class="chat-btn">Clear History</button>
+</div>
+
+<script type="importmap">
+{
+    "imports": {
+        "@google/generative-ai": "https://esm.run/@google/generative-ai"
+    }
+}
+</script>
+<script type="module">
+    import { GoogleGenerativeAI } from "@google/generative-ai";
+
+    const chatBox = document.getElementById('chatBox');
+    const userMsg = document.getElementById('userMsg');
+    const apiKeyInput = document.getElementById('apiKey');
+    let API_KEY = ''; // Initialize API key variable
+    let chat; // Chat instance
+
+    // Set API Key from input
+    apiKeyInput.addEventListener('change', () => {
+        API_KEY = apiKeyInput.value.trim();
+        // Initialize chat
+        if (API_KEY) {
+            const genAI = new GoogleGenerativeAI(API_KEY);
+            const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+            chat = model.startChat();
+        }
+    });
+
+    function escapeHtml(unsafe) {
+        return unsafe
+             .replace(/&/g, "&amp;")
+             .replace(/</g, "&lt;")
+             .replace(/>/g, "&gt;");
+    }
+
+    function parseMarkdown(text) {
+    text = escapeHtml(text);
+
+    // Replace headings only if the line starts with '#'
+    text = text.replace(/(?:^|\n)(#+)([^\n]+)/g, function(match, hashes, content) {
+        let level = hashes.length;
+        return '<h' + level + '>' + content.trim() + '</h' + level + '>';
+    });
+
+    // Replace bold
+    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    text = text.replace(/\_\_(.*?)\_\_/g, '<strong>$1</strong>');
+
+    // Replace italic
+    text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    text = text.replace(/\_(.*?)\_/g, '<em>$1</em>');
+
+    // Process lists
+    // Match ordered and unordered list items but exclude those followed by more list items
+    text = text.replace(/^( *[\d+\.|\*|\-|\+] .+)(?=\n(?! \d+\.|\*|\-|\+))/gm, '$1\n');
+    // Convert newline sandwiched list items into list elements
+    text = text.replace(/^\s*\n( *\d+\.\s+.+)/gm, '<ol>$1</ol>') // ordered
+               .replace(/^\s*\n([*\-+] .+)/gm, '<ul>$1</ul>') // unordered
+               .replace(/^(\s*\d+\.\s+.+|\s*[*\-+]\s+.+)$/gm, '<li>$1</li>'); // wrap list items in <li>
+    // Clean-up: Replace consecutive <li> open-tags with a single one and likewise for close-tags
+    text = text.replace(/<\/li>\n(<li>)+/g, '</li>\n<li>')
+               .replace(/(<li>)+/g, '<li>')
+               .replace(/(<\/li>)+/g, '</li>');
+
+    // Replace single newline characters with line break
+    text = text.replace(/\n/g, '<br>');
+
+    // Post-process lists to wrap consecutive <li>...</li> items inside <ol> or <ul>
+    text = text.replace(/(<li>.*<\/li>)(<br><li>.*<\/li>)+/g, function(match) {
+        if (/^\d+\./.test(match)) {
+            return '<ol>' + match.replace(/<br>/g, '') + '</ol>';
+        } else {
+            return '<ul>' + match.replace(/<br>/g, '') + '</ul>';
+        }
+    });
+
+    return text;
+}
+
+    function createChatHistoryItem(user, text) {
+        let messageClass = user === 'user' ? 'user-msg' : 'model-msg';
+        let chatDiv = document.createElement('div');
+        chatDiv.classList.add('chat-history-item', messageClass);
+        chatDiv.innerHTML = parseMarkdown(text);
+        chatBox.appendChild(chatDiv);
+
+        return chatDiv;
+    }
+
+    async function sendStreamedMessage(msg) {
+        try {
+            createChatHistoryItem('user', msg);
+            userMsg.value = '';
+
+            const result = await chat.sendMessageStream(msg);
+            let modelDiv = createChatHistoryItem('model', '');
+
+            let modelResponseText = '';
+            for await (const chunk of result.stream) {
+                const chunkText = await chunk.text();
+                modelResponseText += chunkText;
+                modelDiv.innerHTML = parseMarkdown(modelResponseText);
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        } catch(e) {
+            console.error('Error sending streamed message:', e);
+        }
+    }
+
+    document.getElementById('clearHistory').addEventListener('click', () => {
+        chatBox.innerHTML = '';
+    });
+
+    document.getElementById('sendMsg').addEventListener('click', () => {
+        const msg = userMsg.value.trim();
+        if (msg && API_KEY) {
+            sendStreamedMessage(msg);
+        }
+    });
+
+    userMsg.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            document.getElementById('sendMsg').click();
+        }
+    });
+    
+    function setCookie(name, value, days) {
+    let expires = '';
+    if (days) {
+        let date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = '; expires=' + date.toUTCString();
+    }
+    document.cookie = name + '=' + (value || '') + expires + '; path=/';
+}
+
+function getCookie(name) {
+    let nameEQ = name + '=';
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
+function eraseCookie(name) {
+    document.cookie = name + '=; Max-Age=-99999999;';
+}
+
+function saveApiKey(apiKey) {
+    // Save the API Key in a cookie for 365 days
+    setCookie('gemini_api_key', apiKey, 365);
+}
+
+function loadApiKey() {
+    // Load the API Key from a cookie
+    return getCookie('gemini_api_key');
+}
+     
+     // Set API Key from input or load from cookies
+document.addEventListener('DOMContentLoaded', () => {
+    const existingApiKey = loadApiKey();
+    if (existingApiKey) {
+        API_KEY = existingApiKey;
+        apiKeyInput.value = API_KEY;
+        initializeChat();
+    }
+});
+
+apiKeyInput.addEventListener('change', () => {
+    API_KEY = apiKeyInput.value.trim();
+    saveApiKey(API_KEY); // Save API key to cookies when changed
+    initializeChat();
+});
+
+// Initialize chat with API Key
+function initializeChat() {
+    if (API_KEY) {
+        // Initialize chat
+        const genAI = new GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        chat = model.startChat();
+    }
+}
+</script>
+</body>
+</html>
