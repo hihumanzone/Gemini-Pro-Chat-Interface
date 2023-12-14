@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gemini Pro - Chat Interface</title>
 <style>
-    body {
+body {
     font-family: 'Arial', sans-serif;
     margin: 20px;
     background-color: #f2f2f2;
@@ -75,12 +75,16 @@
 .model-msg {
     position: relative;
 }
+
+.h {
+    text-align = center;
+}
 </style>
 </head>
 <body>
 <div class="chat-container">
     <div class="api-key-box">
-        <label for="apiKey">API Key:</label>
+        <label class="h" for="apiKey">API Key:</label>
         <input type="password" type="text" id="apiKey" class="user-input">
     </div>
     <div class="chat-box" id="chatBox"></div>
