@@ -89,13 +89,11 @@
     const chatBox = document.getElementById('chatBox');
     const userMsg = document.getElementById('userMsg');
     const apiKeyInput = document.getElementById('apiKey');
-    let API_KEY = ''; // Initialize API key variable
-    let chat; // Chat instance
+    let API_KEY = '';
+    let chat;
 
-    // Set API Key from input
     apiKeyInput.addEventListener('change', () => {
         API_KEY = apiKeyInput.value.trim();
-        // Initialize chat
         if (API_KEY) {
             const genAI = new GoogleGenerativeAI(API_KEY);
             const model = genAI.getGenerativeModel({ model: "gemini-pro"});
@@ -112,34 +110,19 @@
 
     function parseMarkdown(text) {
     text = escapeHtml(text);
-
-    // Replace headings only if the line starts with '#'
     text = text.replace(/(?:^|\n)(#+)([^\n]+)/g, function(match, hashes, content) {
         let level = hashes.length;
         return '<h' + level + '>' + content.trim() + '</h' + level + '>';
     });
-
-    // Replace bold
     text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     text = text.replace(/\_\_(.*?)\_\_/g, '<strong>$1</strong>');
-
-    // Replace italic
     text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
     text = text.replace(/\_(.*?)\_/g, '<em>$1</em>');
-
-    // Unordered lists
     text = text.replace(/(?:^|\n)[\*\+\-] (.+)/gm, '<ul><li>$1</li></ul>');
-    
-    // Convert consecutive list items into a single list
     text = text.replace(/<\/li><\/ul>\s*<ul><li>/g, '</li><li>');
-    
-    // Ordered lists
     text = text.replace(/(?:^|\n)(\d+)\. (.+)/gm, '<ol><li>$2</li></ol>');
     text = text.replace(/<\/li><\/ol>\s*<ol><li>/g, '</li><li>');
-    
-    // Replace single newline characters with line break
     text = text.replace(/\n/g, '<br>');
-
     return text;
 }
 
@@ -173,17 +156,14 @@
             console.error('Error sending streamed message:', e);
         }
     }
-
-    // Function to clear the chat history
+    
 function clearChatHistory() {
-    chatBox.innerHTML = ''; // Clear the chat UI
-    restartChat(); // Restart the chat instance
+    chatBox.innerHTML = '';
+    restartChat();
 }
 
-// Restart the chat with a fresh instance
 function restartChat() {
     if (API_KEY) {
-        // Initialize chat
         const genAI = new GoogleGenerativeAI(API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
         chat = model.startChat();
@@ -235,16 +215,13 @@ function eraseCookie(name) {
 }
 
 function saveApiKey(apiKey) {
-    // Save the API Key in a cookie for 365 days
     setCookie('gemini_api_key', apiKey, 365);
 }
 
 function loadApiKey() {
-    // Load the API Key from a cookie
     return getCookie('gemini_api_key');
 }
      
-     // Set API Key from input or load from cookies
 document.addEventListener('DOMContentLoaded', () => {
     const existingApiKey = loadApiKey();
     if (existingApiKey) {
@@ -256,14 +233,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 apiKeyInput.addEventListener('change', () => {
     API_KEY = apiKeyInput.value.trim();
-    saveApiKey(API_KEY); // Save API key to cookies when changed
+    saveApiKey(API_KEY);
     initializeChat();
 });
 
-// Initialize chat with API Key
 function initializeChat() {
     if (API_KEY) {
-        // Initialize chat
         const genAI = new GoogleGenerativeAI(API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
         chat = model.startChat();
@@ -272,25 +247,17 @@ function initializeChat() {
      
      userMsg.addEventListener("keydown", function(event) {
     if (event.key === "Enter") {
-        event.stopPropagation(); // Stop the event from propagating which can trigger a click event on our "Send" button in some cases.
+        event.stopPropagation();
 
         if (!event.shiftKey) {
-            // If NOT holding shift, add a newline
-            event.preventDefault(); // Prevent the default behavior of sending the message
-
-            // Insert the newline where the cursor is
+            event.preventDefault();
             const start = this.selectionStart;
             const end = this.selectionEnd;
             this.value = this.value.slice(0, start) + "\n" + this.value.slice(end);
-            
-            // Move the cursor to right after the inserted "\n"
             this.selectionStart = this.selectionEnd = start + 1;        
-            
-            // Optionally trigger the 'input' event if you rely on it for other reactiveness
             this.dispatchEvent(new Event('input'));
 
         } else {
-            // If holding shift, send the message
             document.getElementById('sendMsg').click();
         }
     }
