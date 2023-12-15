@@ -170,8 +170,7 @@ label.h {
     };
 }
 
-
-    async function sendStreamedMessage(msg) {
+async function sendStreamedMessage(msg) {
     try {
         createChatHistoryItem('user', msg);
         userMsg.value = '';
@@ -180,9 +179,7 @@ label.h {
 
         // Check for any selected image file and prepare the inputs accordingly
         const imageUploadEl = document.getElementById('imageUpload');
-        const isImageAttached = imageUploadEl.files.length > 0;
-
-        if (isImageAttached) {
+        if (imageUploadEl.files.length > 0) {
             const imageParts = await Promise.all([...imageUploadEl.files].map(fileToGenerativePart));
             inputs = inputs.concat(imageParts); // Append image parts to the inputs array
 
@@ -190,11 +187,6 @@ label.h {
             const genAI = new GoogleGenerativeAI(API_KEY);
             const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
             chat = model.startChat();
-        }
-
-        // Clean inputs array if no image is attached and model is "gemini-pro"
-        if (!isImageAttached && chat.modelName === "gemini-pro") {
-            inputs = inputs.filter(part => !part.hasOwnProperty('inlineData'));
         }
 
         // Continue sending message as per existing functionality
@@ -212,6 +204,7 @@ label.h {
         console.error('Error sending streamed message:', e);
     }
 }
+
 
     
 function clearChatHistory() {
