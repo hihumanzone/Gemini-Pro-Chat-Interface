@@ -2,184 +2,310 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gemini Pro Vision - Image to Text with Streaming</title>
+<title>Gemini Pro - Chat Interface</title>
 <style>
-  body {
-  font-family: 'Arial', sans-serif;
-  margin: 0;
-  padding: 20px;
-  background-color: #f2f2f2;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 20px;
+    background-color: #f2f2f2;
 }
 
 .chat-container {
-  background-color: #fff;
-  width: 100%;
-  max-width: 600px;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-#image-preview {
-  display: block;
-  width: 200px;
-  height: auto;
-  margin: 10px auto;
-  border: 10px solid #ddd;
-  border-radius: 8px;
+.chat-box {
+    height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
 }
 
-#output {
-  min-height: 40px;
-  border: 1px solid #aaa;
-  border-radius: 8px;
-  padding: 10px;
-  margin: 50px;
-  white-space: pre-wrap;
+.user-input {
+    resize: none;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 5px;
 }
 
-input, button, textarea {
-  margin-bottom: 10px;
-  display: block;
-  width: calc(100% - 20px);
-  box-sizing: border-box;
+.chat-btn1, .chat-btn2 {
+    padding: 10px 20px;
+    cursor: pointer;
+    display: block;
+    margin-bottom: 10px;
 }
 
-button, label {
-  padding: 10px 20px;
-  cursor: pointer;
+.chat-btn1 {
+    float: left;
 }
 
-input {
-  padding: 10px;
+.chat-btn2 {
+    float: right;
 }
 
-textarea {
-  resize: none;
-  padding: 10px;
-  margin-bottom: 5px;
-  border-radius: 10px;
+.chat-container:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.chat-history-item, .message {
+    margin-bottom: 12px;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #E1FFC7;
+}
+
+.model-msg {
+    background-color: #C7D8FF;
+}
+
+.api-key-box {
+    margin-bottom: 10px;
+}
+
+.user-msg,
+.model-msg {
+    position: relative;
 }
 
 label.h {
   display: block;
   text-align: center;
-  margin-bottom: -5px;
 }
 
-.uploada {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 20px;
-  margin: 20px;
+pre code {
+    display: block;
+    padding: 10px;
+    margin: 0 0 10px;
+    overflow: auto;
+    font-family: monospace;
+    font-size: 0.9em;
+    background-color: #f7f7f7;
+    border: 1px solid #e1e1e8;
+    border-radius: 4px;
+}
+
+code {
+    padding: 2px 4px;
+    font-family: monospace;
+    font-size: 0.9em;
+    background-color: #f7f7f7;
+    border: 1px solid #e1e1e8;
+    border-radius: 4px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+table th,
+table td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #fff;
+}
+
+table thead th {
+    background-color: #f5f5f5;
+}
+
+blockquote {
+    padding: 10px 20px;
+    margin: 0 0 10px;
+    background-color: #f5f5f5;
+    border-left: 4px solid #dfe2e5;
+    font-style: italic;
 }
 </style>
 </head>
 <body>
 <div class="chat-container">
-<label class="h" for="api-key">API Key</label>
-<input type="password" id="api-key" placeholder="Enter your API key" value="">
-<div id="output"></div>
-<div class="uploada">
-<textarea id="message" rows="4" placeholder="Type your message here..."></textarea>
-<button id="send">Send</button>
-<img id="image-preview" style="display: none;" src="#" alt="Image Preview">
-<input class="e" type="file" id="image-upload" accept="image/*">
-<button id="remove-attachment">Remove Attachment</button>
-</div><br>
-<button id="clear">Clear Everything</button>
+    <div class="api-key-box">
+        <label class="h" for="apiKey">API Key</label>
+        <input type="password" type="text" id="apiKey" class="user-input">
+    </div>
+    <div class="chat-box" id="chatBox"></div>
+    <textarea id="userMsg" class="user-input" placeholder="Type your message" rows="4"></textarea>
+    <button id="sendMsg" class="chat-btn1">Send</button>
+    <button id="clearHistory" class="chat-btn2">Clear History</button>
 </div>
+
 <script type="importmap">
 {
-  "imports": {
-    "@google/generative-ai": "https://esm.run/@google/generative-ai"
-  }
+    "imports": {
+        "@google/generative-ai": "https://esm.run/@google/generative-ai"
+    }
 }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script type="module">
-  import { GoogleGenerativeAI } from "@google/generative-ai";
+    import { GoogleGenerativeAI } from "@google/generative-ai";
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const apiKeyInput = document.getElementById('api-key');
-    const storedApiKey = localStorage.getItem('apiKey');
-    if (storedApiKey) {
-      apiKeyInput.value = storedApiKey;
-    }
-  });
+    const chatBox = document.getElementById('chatBox');
+    const userMsg = document.getElementById('userMsg');
+    const apiKeyInput = document.getElementById('apiKey');
+    let API_KEY = '';
+    let chat;
 
-  const fileInputEl = document.querySelector('#image-upload');
-  const imagePreview = document.querySelector('#image-preview');
-  const removeAttachmentButton = document.querySelector('#remove-attachment');
-  const apiKeyInput = document.querySelector('#api-key');
-  const messageInput = document.querySelector('#message');
-  const sendButton = document.querySelector('#send');
-  const clearButton = document.querySelector('#clear');
-  const outputDiv = document.querySelector('#output');
-
-  apiKeyInput.addEventListener('change', () => {
-    localStorage.setItem('apiKey', apiKeyInput.value);
-  });
-
-  fileInputEl.addEventListener('change', function() {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      imagePreview.src = e.target.result;
-      imagePreview.style.display = 'block';
-    };
-    reader.readAsDataURL(this.files[0]);
-  });
-
-  removeAttachmentButton.addEventListener('click', function() {
-    fileInputEl.value = '';
-    imagePreview.style.display = 'none';
-  });
-
-  sendButton.addEventListener('click', async function() {
-    const API_KEY = localStorage.getItem('apiKey');
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-
-    const prompt = messageInput.value;
-    let imageParts = [];
-
-    if (fileInputEl.files.length > 0) {
-      imageParts = await Promise.all([...fileInputEl.files].map(fileToGenerativePart));
-    }
-
-    try {
-      const result = await model.generateContentStream([prompt, ...imageParts]);
-
-      for await (const chunk of result.stream) {
-        const chunkText = await chunk.text();
-        outputDiv.textContent += chunkText;
-      }
-    } catch (error) {
-      outputDiv.textContent = "An error occurred: " + error.message;
-    }
-  });
-
-  clearButton.addEventListener('click', function() {
-    messageInput.value = '';
-    fileInputEl.value = '';
-    imagePreview.src = '#';
-    imagePreview.style.display = 'none';
-    outputDiv.textContent = '';
-  });
-
-  async function fileToGenerativePart(file) {
-    const base64EncodedDataPromise = new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result.split(',')[1]);
-      reader.readAsDataURL(file);
+    apiKeyInput.addEventListener('change', () => {
+        API_KEY = apiKeyInput.value.trim();
+        if (API_KEY) {
+            const genAI = new GoogleGenerativeAI(API_KEY);
+            const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+            chat = model.startChat();
+        }
     });
-    return {
-      inlineData: { data: await base64EncodedDataPromise, mimeType: file.type },
-    };
-  }
+
+    function markedParse(text) {
+        return marked.parse(text);
+    }
+
+
+    function createChatHistoryItem(user, text) {
+        let messageClass = user === 'user' ? 'user-msg' : 'model-msg';
+        let chatDiv = document.createElement('div');
+        chatDiv.classList.add('chat-history-item', messageClass);
+        chatDiv.innerHTML = markedParse(text);
+        chatBox.appendChild(chatDiv);
+
+        return chatDiv;
+    }
+
+    async function sendStreamedMessage(msg) {
+    try {
+        createChatHistoryItem('user', msg);
+        userMsg.value = '';
+
+        const result = await chat.sendMessageStream(msg);
+        let modelDiv = createChatHistoryItem('model', '');
+
+        let modelResponseText = '';
+        for await (const chunk of result.stream) {
+            const chunkText = await chunk.text();
+            modelResponseText += chunkText;
+            modelDiv.innerHTML = marked.parse(modelResponseText);
+        }
+        chatBox.scrollTop = chatBox.scrollHeight;
+    } catch (e) {
+        console.error('Error sending streamed message:', e);
+    }
+}
+    
+function clearChatHistory() {
+    chatBox.innerHTML = '';
+    restartChat();
+}
+
+function restartChat() {
+    if (API_KEY) {
+        const genAI = new GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        chat = model.startChat();
+    }
+}
+
+document.getElementById('clearHistory').addEventListener('click', () => {
+    clearChatHistory();
+});
+
+
+    document.getElementById('sendMsg').addEventListener('click', () => {
+        const msg = userMsg.value.trim();
+        if (msg && API_KEY) {
+            sendStreamedMessage(msg);
+        }
+    });
+
+    userMsg.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            document.getElementById('sendMsg').click();
+        }
+    });
+    
+    function setCookie(name, value, days) {
+    let expires = '';
+    if (days) {
+        let date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = '; expires=' + date.toUTCString();
+    }
+    document.cookie = name + '=' + (value || '') + expires + '; path=/';
+}
+
+function getCookie(name) {
+    let nameEQ = name + '=';
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
+function eraseCookie(name) {
+    document.cookie = name + '=; Max-Age=-99999999;';
+}
+
+function saveApiKey(apiKey) {
+    setCookie('gemini_api_key', apiKey, 365);
+}
+
+function loadApiKey() {
+    return getCookie('gemini_api_key');
+}
+     
+document.addEventListener('DOMContentLoaded', () => {
+    const existingApiKey = loadApiKey();
+    if (existingApiKey) {
+        API_KEY = existingApiKey;
+        apiKeyInput.value = API_KEY;
+        initializeChat();
+    }
+});
+
+apiKeyInput.addEventListener('change', () => {
+    API_KEY = apiKeyInput.value.trim();
+    saveApiKey(API_KEY);
+    initializeChat();
+});
+
+function initializeChat() {
+    if (API_KEY) {
+        const genAI = new GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        chat = model.startChat();
+    }
+}
+     
+     userMsg.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        event.stopPropagation();
+
+        if (!event.shiftKey) {
+            event.preventDefault();
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            this.value = this.value.slice(0, start) + "\n" + this.value.slice(end);
+            this.selectionStart = this.selectionEnd = start + 1;        
+            this.dispatchEvent(new Event('input'));
+
+        } else {
+            document.getElementById('sendMsg').click();
+        }
+    }
+});
 </script>
 </body>
 </html>
