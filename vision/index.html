@@ -136,6 +136,7 @@ label.h {
   });
 
   sendButton.addEventListener('click', async function() {
+    outputDiv.textContent = '';
     const API_KEY = localStorage.getItem('apiKey');
     const genAI = new GoogleGenerativeAI(API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
