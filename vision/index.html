@@ -155,6 +155,7 @@ blockquote {
     <button class="button" id="clear">Clear Everything</button>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/compressorjs@1.1.1/dist/compressor.min.js"></script>
   <script type="importmap">
     {
       "imports": {
@@ -180,23 +181,50 @@ blockquote {
     imageUploadEl.addEventListener('change', updateImagePreviews);
 
     function updateImagePreviews() {
-      const files = imageUploadEl.files;
-      const container = document.createElement('div');
-      container.id = 'image-preview-container';
-      Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = e => {
-          const img = document.createElement('img');
-          img.src = e.target.result;
-          img.classList.add('image-preview');
-          container.appendChild(img);
-        };
-        reader.readAsDataURL(file);
-      });
-      const oldContainer = document.getElementById('image-preview-container');
-      oldContainer?.remove();
-      imageUploadEl.after(container);
-    }
+  const files = imageUploadEl.files;
+  const container = document.createElement('div');
+  container.id = 'image-preview-container';
+  let totalSize = 0;
+  Array.from(files).forEach(file => {
+    totalSize += file.size;
+  });
+  const compress = totalSize > 4 * 1024 * 1024;
+
+  Array.from(files).forEach(file => {
+    const processFile = compress ? compressImage : readFile;
+    processFile(file, container);
+  });
+
+  const oldContainer = document.getElementById('image-preview-container');
+  oldContainer?.remove();
+  imageUploadEl.after(container);
+}
+
+function readFile(file, container) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.createElement('img');
+    img.src = e.target.result;
+    img.classList.add('image-preview');
+    container.appendChild(img);
+  };
+  reader.readAsDataURL(file);
+}
+
+function compressImage(file, container) {
+  new Compressor(file, {
+    quality: 0.8,
+    maxWidth: 2048,
+    maxHeight: 2048,
+    success(result) {
+      readFile(result, container);
+    },
+    error(err) {
+      console.error(err.message);
+    },
+  });
+}
+
 
     function removeAttachment() {
       imageUploadEl.value = '';
@@ -241,15 +269,33 @@ blockquote {
     }
 
     async function fileToGenerativePart(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve({
-          inlineData: { data: reader.result.split(',')[1], mimeType: file.type },
-        });
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
+  return new Promise((resolve, reject) => {
+    if (file.size <= 4 * 1024 * 1024) {
+      readAsDataUrl(file, resolve, reject);
+    } else {
+      new Compressor(file, {
+        quality: 0.8,
+        maxWidth: 2048,
+        maxHeight: 2048,
+        success(compressedFile) {
+          readAsDataUrl(compressedFile, resolve, reject);
+        },
+        error(err) {
+          reject(err);
+        },
       });
     }
+  });
+}
+
+function readAsDataUrl(file, resolve, reject) {
+  const reader = new FileReader();
+  reader.onloadend = () => resolve({
+    inlineData: { data: reader.result.split(',')[1], mimeType: file.type },
+  });
+  reader.onerror = reject;
+  reader.readAsDataURL(file);
+}
   </script>
 </body>
 </html>
