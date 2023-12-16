@@ -223,17 +223,35 @@ function markedParse(text) {
 }
 
 
-    function createChatHistoryItem(user, text) {
-        let messageClass = user === 'user' ? 'user-msg' : 'model-msg';
-        let chatDiv = document.createElement('div');
-        chatDiv.classList.add('chat-history-item', messageClass);
-        chatDiv.innerHTML = markedParse(text);
-        chatBox.appendChild(chatDiv);
+  function escapeHTML(text) {
+    var map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
 
-        return chatDiv;
-    }
+function createChatHistoryItem(user, text) {
+    let messageClass = user === 'user' ? 'user-msg' : 'model-msg';
+    let chatDiv = document.createElement('div');
+    chatDiv.classList.add('chat-history-item', messageClass);
+    let escapedHTMLMessage = escapeHTML(text);
+    chatDiv.innerHTML = markedParse(escapedHTMLMessage);
+    chatBox.appendChild(chatDiv);
 
-    async function sendStreamedMessage(msg) {
+    return chatDiv;
+}
+
+
+  renderer.text = (text) => {
+  let escapedText = escapeHTML(text);
+  return renderLatex(escapedText);
+};
+
+async function sendStreamedMessage(msg) {
     try {
         createChatHistoryItem('user', msg);
         userMsg.value = '';
@@ -245,7 +263,8 @@ function markedParse(text) {
         for await (const chunk of result.stream) {
             const chunkText = await chunk.text();
             modelResponseText += chunkText;
-            modelDiv.innerHTML = markedParse(modelResponseText);
+            let escapedResponseText = escapeHTML(modelResponseText);
+            modelDiv.innerHTML = markedParse(escapedResponseText);
         }
         chatBox.scrollTop = chatBox.scrollHeight;
     } catch (e) {
