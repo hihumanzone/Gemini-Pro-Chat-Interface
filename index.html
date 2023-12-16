@@ -250,7 +250,17 @@ function markedParse(text) {
         chatBox.scrollTop = chatBox.scrollHeight;
     } catch (e) {
         console.error('Error sending streamed message:', e);
+        displayErrorMessage(`Error: ${e.message || 'Unknown error'}`);
     }
+}
+
+function displayErrorMessage(errorMessage) {
+    let errorDiv = document.createElement('div');
+    errorDiv.classList.add('chat-history-item', 'model-msg');
+    errorDiv.style.backgroundColor = '#FFD1D1';
+    errorDiv.textContent = errorMessage;
+    chatBox.appendChild(errorDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
     
 function clearChatHistory() {
