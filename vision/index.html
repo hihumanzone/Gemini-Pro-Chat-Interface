@@ -68,14 +68,75 @@ label.h {
   padding: 20px;
   margin: 20px;
 }
-    .image-preview {
-      border: 10px solid #ddd;
-      border-radius: 8px;
-      display: block;
-      width: 200px;
-      height: auto;
-      margin: 10px auto;
-    }
+.image-preview {
+  border: 10px solid #ddd;
+  border-radius: 8px;
+  display: block;
+  width: 200px;
+  height: auto;
+  margin: 10px auto;
+}
+    
+.generating, .actual-output {
+  margin-bottom: 12px;
+  padding: 5px;
+  border-radius: 5px;
+  background-color: #E1FFC7;
+}
+
+.actual-output {
+  background-color: #C7D8FF;
+}
+
+.error {
+  background-color: #FFC7D8;
+}
+
+pre code {
+    display: block;
+    padding: 10px;
+    margin: 0 0 10px;
+    overflow: auto;
+    font-family: monospace;
+    font-size: 0.9em;
+    background-color: #f7f7f7;
+    border: 1px solid #e1e1e8;
+    border-radius: 4px;
+}
+
+code {
+    padding: 2px 4px;
+    font-family: monospace;
+    font-size: 0.9em;
+    background-color: #f7f7f7;
+    border: 1px solid #e1e1e8;
+    border-radius: 4px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+table th,
+table td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #fff;
+}
+
+table thead th {
+    background-color: #f5f5f5;
+}
+
+blockquote {
+    padding: 10px 20px;
+    margin: 0 0 10px;
+    background-color: #f5f5f5;
+    border-left: 4px solid #dfe2e5;
+    font-style: italic;
+}
   </style>
 </head>
 <body>
@@ -93,6 +154,7 @@ label.h {
     </div>
     <button class="button" id="clear">Clear Everything</button>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script type="importmap">
     {
       "imports": {
@@ -142,28 +204,40 @@ label.h {
     }
 
     async function send() {
-      const apiKey = localStorage.getItem('apiKey');
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
+    outputEl.textContent = 'Generating...';
+    outputEl.className = 'generating';
+    const apiKey = localStorage.getItem('apiKey');
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
 
-      const prompt = messageEl.value;
-      const imageParts = await Promise.all(Array.from(imageUploadEl.files).map(fileToGenerativePart));
+    const prompt = messageEl.value;
+    const imageParts = await Promise.all(Array.from(imageUploadEl.files).map(fileToGenerativePart));
 
-      try {
+    let modelResponseText = '';
+    try {
         const result = await model.generateContentStream([prompt, ...imageParts]);
         for await (const chunk of result.stream) {
-          outputEl.textContent += await chunk.text();
+            const chunkText = await chunk.text();
+            modelResponseText += chunkText;
+            if (result.stream) {
+                outputEl.className = 'actual-output';
+            }
+            const htmlResponse = marked.parse(modelResponseText);
+            outputEl.innerHTML = htmlResponse;
         }
-      } catch (error) {
+    } catch (error) {
+        outputEl.className = 'error';
         outputEl.textContent = "An error occurred: " + error.message;
-      }
     }
+}
+
 
     function clear() {
       messageEl.value = '';
       imageUploadEl.value = '';
       outputEl.textContent = '';
       document.getElementById('image-preview-container')?.remove();
+      outputEl.className = '';
     }
 
     async function fileToGenerativePart(file) {
