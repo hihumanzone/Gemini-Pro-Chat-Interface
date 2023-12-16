@@ -190,7 +190,7 @@ const renderer = new marked.Renderer();
 renderer.text = (text) => {
   return renderLatex(text);
 };
-.
+
 marked.use({ renderer });
 
 function markedParse(text) {
