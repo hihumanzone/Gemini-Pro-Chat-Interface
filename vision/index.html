@@ -1,35 +1,26 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gemini Pro Vision - Image to Text with Streaming</title>
-<style>
-  body {
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gemini Pro Vision - Image to Text with Streaming</title>
+  <style>
+    body {
   font-family: 'Arial', sans-serif;
+  margin: 0;
   padding: 20px;
   background-color: #f2f2f2;
   height: 100vh;
 }
-
 .chat-container {
   background-color: #fff;
+  margin: auto;
   width: 100%;
   max-width: 600px;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin: auto;
 }
-
-#image-preview {
-  display: block;
-  width: 200px;
-  height: auto;
-  margin: 10px auto;
-  border: 10px solid #ddd;
-  border-radius: 8px;
-}
-
 #output {
   min-height: 40px;
   border: 1px solid #aaa;
@@ -38,146 +29,154 @@
   margin: 50px;
   white-space: pre-wrap;
 }
-
 input, button, textarea {
   margin-bottom: 10px;
   display: block;
-  width: calc(100% - 20px);
   box-sizing: border-box;
 }
-
 button, label {
   padding: 10px 20px;
   cursor: pointer;
 }
-
+.button {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.bcontainer {
+    display: flex;
+    justify-content: center;
+}
 input {
   padding: 10px;
+  width: calc(100% - 20px);
 }
-
 textarea {
+  width: calc(100% - 20px);
   resize: none;
   padding: 10px;
   margin-bottom: 5px;
   border-radius: 10px;
 }
-
 label.h {
   display: block;
   text-align: center;
   margin-bottom: -5px;
 }
-
 .uploada {
   border: 1px solid #ccc;
   border-radius: 5px;
   padding: 20px;
   margin: 20px;
 }
-</style>
+    .image-preview {
+      border: 10px solid #ddd;
+      border-radius: 8px;
+      display: block;
+      width: 200px;
+      height: auto;
+      margin: 10px auto;
+    }
+  </style>
 </head>
 <body>
-<div class="chat-container">
-<label class="h" for="api-key">API Key</label>
-<input type="password" id="api-key" placeholder="Enter your API key" value="">
-<div id="output"></div>
-<div class="uploada">
-<textarea id="message" rows="4" placeholder="Type your message here..."></textarea>
-<button id="send">Send</button>
-<img id="image-preview" style="display: none;" src="#" alt="Image Preview">
-<input class="e" type="file" id="image-upload" accept="image/*">
-<button id="remove-attachment">Remove Attachment</button>
-</div><br>
-<button id="clear">Clear Everything</button>
-</div>
-<script type="importmap">
-{
-  "imports": {
-    "@google/generative-ai": "https://esm.run/@google/generative-ai"
-  }
-}
-</script>
-<script type="module">
-  import { GoogleGenerativeAI } from "@google/generative-ai";
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const apiKeyInput = document.getElementById('api-key');
-    const storedApiKey = localStorage.getItem('apiKey');
-    if (storedApiKey) {
-      apiKeyInput.value = storedApiKey;
-    }
-  });
-
-  const fileInputEl = document.querySelector('#image-upload');
-  const imagePreview = document.querySelector('#image-preview');
-  const removeAttachmentButton = document.querySelector('#remove-attachment');
-  const apiKeyInput = document.querySelector('#api-key');
-  const messageInput = document.querySelector('#message');
-  const sendButton = document.querySelector('#send');
-  const clearButton = document.querySelector('#clear');
-  const outputDiv = document.querySelector('#output');
-
-  apiKeyInput.addEventListener('change', () => {
-    localStorage.setItem('apiKey', apiKeyInput.value);
-  });
-
-  fileInputEl.addEventListener('change', function() {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      imagePreview.src = e.target.result;
-      imagePreview.style.display = 'block';
-    };
-    reader.readAsDataURL(this.files[0]);
-  });
-
-  removeAttachmentButton.addEventListener('click', function() {
-    fileInputEl.value = '';
-    imagePreview.style.display = 'none';
-  });
-
-  sendButton.addEventListener('click', async function() {
-    outputDiv.textContent = '';
-    const API_KEY = localStorage.getItem('apiKey');
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-
-    const prompt = messageInput.value;
-    let imageParts = [];
-
-    if (fileInputEl.files.length > 0) {
-      imageParts = await Promise.all([...fileInputEl.files].map(fileToGenerativePart));
-    }
-
-    try {
-      const result = await model.generateContentStream([prompt, ...imageParts]);
-
-      for await (const chunk of result.stream) {
-        const chunkText = await chunk.text();
-        outputDiv.textContent += chunkText;
+  <div class="chat-container">
+    <label class="h" for="api-key">API Key</label>
+    <input type="password" id="api-key" placeholder="Enter your API key" value="">
+    <div id="output"></div>
+    <div class="uploada">
+      <textarea id="message" rows="4" placeholder="Type your message here..."></textarea>
+      <div class="bcontainer">
+        <button class="button" id="send">Send</button>
+        <button class="button" id="remove-attachment">Remove Attachment</button>
+      </div>
+      <input type="file" id="image-upload" accept="image/*" multiple>
+    </div>
+    <button class="button" id="clear">Clear Everything</button>
+  </div>
+  <script type="importmap">
+    {
+      "imports": {
+        "@google/generative-ai": "https://esm.run/@google/generative-ai"
       }
-    } catch (error) {
-      outputDiv.textContent = "An error occurred: " + error.message;
     }
-  });
+  </script>
+  <script type="module">
+    import { GoogleGenerativeAI } from "@google/generative-ai";
 
-  clearButton.addEventListener('click', function() {
-    messageInput.value = '';
-    fileInputEl.value = '';
-    imagePreview.src = '#';
-    imagePreview.style.display = 'none';
-    outputDiv.textContent = '';
-  });
+    const apiKeyEl = document.getElementById('api-key');
+    const outputEl = document.getElementById('output');
+    const messageEl = document.getElementById('message');
+    const imageUploadEl = document.getElementById('image-upload');
 
-  async function fileToGenerativePart(file) {
-    const base64EncodedDataPromise = new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result.split(',')[1]);
-      reader.readAsDataURL(file);
-    });
-    return {
-      inlineData: { data: await base64EncodedDataPromise, mimeType: file.type },
-    };
-  }
-</script>
+    apiKeyEl.value = localStorage.getItem('apiKey') || '';
+
+    apiKeyEl.addEventListener('input', () => localStorage.setItem('apiKey', apiKeyEl.value));
+
+    document.getElementById('send').addEventListener('click', send);
+    document.getElementById('clear').addEventListener('click', clear);
+    document.getElementById('remove-attachment').addEventListener('click', removeAttachment);
+    imageUploadEl.addEventListener('change', updateImagePreviews);
+
+    function updateImagePreviews() {
+      const files = imageUploadEl.files;
+      const container = document.createElement('div');
+      container.id = 'image-preview-container';
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.classList.add('image-preview');
+          container.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+      const oldContainer = document.getElementById('image-preview-container');
+      oldContainer?.remove();
+      imageUploadEl.after(container);
+    }
+
+    function removeAttachment() {
+      imageUploadEl.value = '';
+      document.getElementById('image-preview-container')?.remove();
+    }
+
+    async function send() {
+      const apiKey = localStorage.getItem('apiKey');
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
+
+      const prompt = messageEl.value;
+      const imageParts = await Promise.all(Array.from(imageUploadEl.files).map(fileToGenerativePart));
+
+      try {
+        const result = await model.generateContentStream([prompt, ...imageParts]);
+        for await (const chunk of result.stream) {
+          outputEl.textContent += await chunk.text();
+        }
+      } catch (error) {
+        outputEl.textContent = "An error occurred: " + error.message;
+      }
+    }
+
+    function clear() {
+      messageEl.value = '';
+      imageUploadEl.value = '';
+      outputEl.textContent = '';
+      document.getElementById('image-preview-container')?.remove();
+    }
+
+    async function fileToGenerativePart(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve({
+          inlineData: { data: reader.result.split(',')[1], mimeType: file.type },
+        });
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+  </script>
 </body>
 </html>
