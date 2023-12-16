@@ -2,12 +2,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
 <title>Gemini Pro - Chat Interface</title>
 <style>
 body {
     font-family: 'Arial', sans-serif;
     margin: 20px;
     background-color: #f2f2f2;
+    justify-content: center;
+    align-items: center;
+    display: flex;
 }
 
 .chat-container {
@@ -133,14 +137,16 @@ blockquote {
 <div class="chat-container">
     <div class="api-key-box">
         <label class="h" for="apiKey">API Key</label>
-        <input type="password" id="apiKey" class="user-input">
+        <input type="password" type="text" id="apiKey" class="user-input">
     </div>
     <div class="chat-box" id="chatBox"></div>
     <textarea id="userMsg" class="user-input" placeholder="Type your message" rows="4"></textarea>
     <button id="sendMsg" class="chat-btn1">Send</button>
     <button id="clearHistory" class="chat-btn2">Clear History</button>
 </div>
-
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
 <script type="importmap">
 {
     "imports": {
@@ -167,9 +173,38 @@ blockquote {
         }
     });
 
-    function markedParse(text) {
-        return marked.parse(text);
+function renderLatex(text) {
+  const inlineMath = /\$(.+?)\$/g;
+  const displayMath = /\$\$(.+?)\$\$/g;
+
+  function replaceWithKatex(pattern, displayMode) {
+    return text.replace(pattern, (_, expr) => katex.renderToString(expr, {
+      throwOnError: false,
+      displayMode: displayMode
+    }));
+  }
+
+  text = replaceWithKatex(displayMath, true);
+  text = replaceWithKatex(inlineMath, false);
+  return text;
+}
+
+const renderer = new marked.Renderer();
+renderer.text = (text) => {
+  return renderLatex(text);
+};
+.
+marked.use({ renderer });
+
+function markedParse(text) {
+  const tokens = marked.lexer(text);
+  tokens.forEach((token) => {
+    if (token.type === 'paragraph') {
+      token.text = renderLatex(token.text);
     }
+  });
+  return marked.parser(tokens);
+}
 
 
     function createChatHistoryItem(user, text) {
@@ -194,7 +229,7 @@ blockquote {
         for await (const chunk of result.stream) {
             const chunkText = await chunk.text();
             modelResponseText += chunkText;
-            modelDiv.innerHTML = marked.parse(modelResponseText);
+            modelDiv.innerHTML = markedParse(modelResponseText);
         }
         chatBox.scrollTop = chatBox.scrollHeight;
     } catch (e) {
