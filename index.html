@@ -307,13 +307,6 @@ document.getElementById('clearHistory').addEventListener('click', () => {
         }
     });
 
-    userMsg.addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            document.getElementById('sendMsg').click();
-        }
-    });
-
 document.addEventListener('click', function(event) {
   if (event.target && event.target.classList.contains('copy-btn')) {
     const targetId = event.target.getAttribute('data-target');
