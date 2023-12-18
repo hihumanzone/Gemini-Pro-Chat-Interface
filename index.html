@@ -22,13 +22,19 @@
 }
 
 .chat-box {
-  height: 50vh;
+  height: 70vh;
   overflow-y: auto;
   border: 1px solid #ccc;
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 8px;
 }
+
+    @media screen and (orientation: landscape) {
+  #chat-box {
+    height: 45vh;
+  }
+    }
 
     .user-input {
       resize: none;
