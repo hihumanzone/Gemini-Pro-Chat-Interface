@@ -1,168 +1,181 @@
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
-<title>Gemini Pro - Chat Interface</title>
-<style>
-body {
-    font-family: 'Arial', sans-serif;
-    margin: 20px;
-    background-color: #f2f2f2;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+  <title>Gemini Pro - Chat Interface</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 20px;
+      background-color: #f2f2f2;
+    }
 
-.chat-container {
-    background-color: #fff;
-    width: 100%;
-    max-width: 600px;
-    margin: auto;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+    .chat-container {
+      background-color: #fff;
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
 
-.chat-box {
-    height: 300px;
-    overflow-y: auto;
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-}
+    .chat-box {
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+    }
 
-.user-input {
-    resize: none;
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 5px;
-}
+    .user-input {
+      resize: none;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 5px;
+    }
 
-.chat-btn1, .chat-btn2 {
-    padding: 10px 20px;
-    cursor: pointer;
-    display: block;
-    margin-bottom: 10px;
-}
+    .chat-btn1,
+    .chat-btn2 {
+      padding: 10px 20px;
+      cursor: pointer;
+      display: block;
+      margin-bottom: 10px;
+    }
 
-.chat-btn1 {
-    float: left;
-}
+    .chat-btn1 {
+      float: left;
+    }
 
-.chat-btn2 {
-    float: right;
-}
+    .chat-btn2 {
+      float: right;
+    }
 
-.chat-container:after {
-    content: "";
-    display: table;
-    clear: both;
-}
+    .chat-container:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
 
-.chat-history-item, .message {
-    margin-bottom: 12px;
-    padding: 5px;
-    border-radius: 5px;
-    background-color: #E1FFC7;
-}
+    .chat-history-item,
+    .message {
+      margin-bottom: 25px;
+      padding: 5px;
+      border-radius: 5px;
+      background-color: #E1FFC7;
+    }
 
-.model-msg {
-    background-color: #C7D8FF;
-}
+    .model-msg {
+      background-color: #C7D8FF;
+    }
 
-.api-key-box {
-    margin-bottom: 10px;
-}
+    .api-key-box {
+      margin-bottom: 10px;
+    }
 
-.user-msg,
-.model-msg {
-    position: relative;
-}
+    .user-msg,
+    .model-msg {
+      position: relative;
+    }
 
-label.h {
-  display: block;
-  text-align: center;
-}
+    label.h {
+      display: block;
+      text-align: center;
+    }
 
-pre code {
-    display: block;
-    padding: 10px;
-    margin: 0 0 10px;
-    overflow: auto;
-    font-family: monospace;
-    font-size: 0.9em;
-    background-color: #f7f7f7;
-    border: 1px solid #e1e1e8;
-    border-radius: 4px;
-}
+    pre code {
+      display: block;
+      padding: 10px;
+      margin: 0 0 10px;
+      overflow: auto;
+      font-family: monospace;
+      font-size: 0.9em;
+      background-color: #f7f7f7;
+      border: 1px solid #e1e1e8;
+      border-radius: 4px;
+    }
 
-code {
-    padding: 2px 4px;
-    font-family: monospace;
-    font-size: 0.9em;
-    background-color: #f7f7f7;
-    border: 1px solid #e1e1e8;
-    border-radius: 4px;
-}
+    code {
+      padding: 2px 4px;
+      font-family: monospace;
+      font-size: 0.9em;
+      background-color: #f7f7f7;
+      border: 1px solid #e1e1e8;
+      border-radius: 4px;
+    }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 10px;
-}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 10px;
+    }
 
-table th,
-table td {
-    padding: 8px;
-    text-align: left;
-    border: 1px solid #fff;
-}
+    table th,
+    table td {
+      padding: 8px;
+      text-align: left;
+      border: 1px solid #fff;
+    }
 
-table thead th {
-    background-color: #f5f5f5;
-}
+    table thead th {
+      background-color: #f5f5f5;
+    }
 
-blockquote {
-    padding: 10px 20px;
-    margin: 0 0 10px;
-    background-color: #f5f5f5;
-    border-left: 4px solid #dfe2e5;
-    font-style: italic;
-}
+    blockquote {
+      padding: 10px 20px;
+      margin: 0 0 10px;
+      background-color: #f5f5f5;
+      border-left: 4px solid #dfe2e5;
+      font-style: italic;
+    }
 
-.copy-btn {
-    margin-top: -10px;
-    padding: 5px 10px;
-    cursor: pointer;
-    background-color: #f7f7f7;
-    border: none;
-    border-radius: 4px;
-    font-size: 0.8em;
-}
-</style>
+    .copy-code-btn, .copy-msg-btn {
+      padding: 5px 10px;
+      cursor: pointer;
+      background-color: #f7f7f7;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.8em;
+      cursor: pointer;
+    }
+    
+    .copy-msg-btn {
+      padding: 4px 8px;
+      border: 0.5px solid #aaa;
+      float: right;
+    }
+    
+    .copy-code-btn {
+      margin-top: -12px;
+      border: 1px solid #e1e1e8;
+    }
+  </style>
 </head>
+
 <body>
-<div class="chat-container">
+  <div class="chat-container">
     <div class="api-key-box">
-        <label class="h" for="apiKey">API Key</label>
-        <input type="password" id="apiKey" class="user-input">
+      <label class="h" for="apiKey">API Key</label>
+      <input type="password" id="apiKey" class="user-input">
     </div>
     <div class="chat-box" id="chatBox"></div>
     <textarea id="userMsg" class="user-input" placeholder="Type your message" rows="4"></textarea>
     <button id="sendMsg" class="chat-btn1">Send</button>
     <button id="clearHistory" class="chat-btn2">Clear History</button>
-</div>
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
-        onload="renderMathInElement(document.body);"></script>
-<script type="importmap">
-{
+  </div>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+  <script type="importmap">
+    {
     "imports": {
         "@google/generative-ai": "https://esm.run/@google/generative-ai"
     }
 }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script type="module">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script type="module">
     import { GoogleGenerativeAI } from "@google/generative-ai";
 
     const chatBox = document.getElementById('chatBox');
@@ -172,229 +185,252 @@ blockquote {
     let chat;
 
     apiKeyInput.addEventListener('change', () => {
-        API_KEY = apiKeyInput.value.trim();
-        if (API_KEY) {
-            const genAI = new GoogleGenerativeAI(API_KEY);
-            const model = genAI.getGenerativeModel({ model: "gemini-pro"});
-            chat = model.startChat();
-        }
+      API_KEY = apiKeyInput.value.trim();
+      if (API_KEY) {
+        const genAI = new GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        chat = model.startChat();
+      }
     });
 
-function renderLatex(text) {
-  const inlineMath = /\$(.+?)\$/g;
-  const displayMath = /\$\$(.+?)\$\$/g;
+    function renderLatex(text) {
+      const inlineMath = /\$(.+?)\$/g;
+      const displayMath = /\$\$(.+?)\$\$/g;
 
-  function replaceWithKatex(pattern, displayMode) {
-    return text.replace(pattern, (_, expr) => katex.renderToString(expr, {
-      throwOnError: false,
-      displayMode: displayMode
-    }));
-  }
+      function replaceWithKatex(pattern, displayMode) {
+        return text.replace(pattern, (_, expr) => katex.renderToString(expr, {
+          throwOnError: false,
+          displayMode: displayMode
+        }));
+      }
 
-  text = replaceWithKatex(displayMath, true);
-  text = replaceWithKatex(inlineMath, false);
-  return text;
-}
-
-const renderer = new marked.Renderer();
-renderer.text = (text) => {
-  return renderLatex(text);
-};
-
-renderer.code = function(code, language) {
-  const id = `code_block_${Math.random().toString(36).substring(2, 9)}`;
-  return `
-    <pre><code id="${id}" class="${language}">${code}</code></pre>
-    <button class="copy-btn" data-target="${id}">Copy</button>
-  `;
-};
-
-marked.use({ renderer });
-
-
-function markedParse(text) {
-  const tokens = marked.lexer(text);
-  tokens.forEach((token) => {
-    if (token.type === 'paragraph') {
-      token.text = renderLatex(token.text);
+      text = replaceWithKatex(displayMath, true);
+      text = replaceWithKatex(inlineMath, false);
+      return text;
     }
-  });
-  return marked.parser(tokens);
-}
+
+    const renderer = new marked.Renderer();
+    renderer.text = (text) => {
+      return renderLatex(text);
+    };
+
+    renderer.code = function(code, language) {
+      const id = `code_block_${Math.random().toString(36).substring(2, 9)}`;
+      return `
+    <pre><code id="${id}" class="${language}">${code}</code></pre>
+    <button class="copy-code-btn" data-target="${id}">Copy</button>
+  `;
+    };
+
+    marked.use({ renderer });
 
 
-  function escapeHTML(text) {
-    var map = {
+    function markedParse(text) {
+      const tokens = marked.lexer(text);
+      tokens.forEach((token) => {
+        if (token.type === 'paragraph') {
+          token.text = renderLatex(token.text);
+        }
+      });
+      return marked.parser(tokens);
+    }
+
+
+    function escapeHTML(text) {
+      var map = {
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',
         '"': '&quot;',
         "'": '&#039;'
+      };
+      return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    }
+
+    function addCopyButton(container, text) {
+      let copyButton = document.createElement('button');
+      copyButton.textContent = 'Copy';
+      copyButton.classList.add('copy-msg-btn');
+      copyButton.onclick = function() {
+        navigator.clipboard.writeText(text).then(() => {
+          copyButton.textContent = 'Copied!';
+          setTimeout(() => copyButton.textContent = 'Copy', 2000);
+        }).catch(err => console.error('Error copying text:', err));
+      };
+      container.appendChild(copyButton);
+    }
+
+    function createChatHistoryItem(user, text) {
+      let messageClass = user === 'user' ? 'user-msg' : 'model-msg';
+      let chatDiv = document.createElement('div');
+      chatDiv.classList.add('chat-history-item', messageClass);
+      let escapedHTMLMessage = escapeHTML(text);
+      chatDiv.innerHTML = markedParse(escapedHTMLMessage);
+      chatBox.appendChild(chatDiv);
+      return chatDiv;
+    }
+
+
+    renderer.text = (text) => {
+      let escapedText = escapeHTML(text);
+      return renderLatex(escapedText);
     };
-    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
-}
 
-function createChatHistoryItem(user, text) {
-    let messageClass = user === 'user' ? 'user-msg' : 'model-msg';
-    let chatDiv = document.createElement('div');
-    chatDiv.classList.add('chat-history-item', messageClass);
-    let escapedHTMLMessage = escapeHTML(text);
-    chatDiv.innerHTML = markedParse(escapedHTMLMessage);
-    chatBox.appendChild(chatDiv);
-
-    return chatDiv;
-}
-
-
-  renderer.text = (text) => {
-  let escapedText = escapeHTML(text);
-  return renderLatex(escapedText);
-};
-
-async function sendStreamedMessage(msg) {
-    try {
-        createChatHistoryItem('user', msg);
+    async function sendStreamedMessage(msg) {
+      try {
+        let userDiv = createChatHistoryItem('user', msg);
         userMsg.value = '';
+        addCopyButton(userDiv, msg);
 
         const result = await chat.sendMessageStream(msg);
         let modelDiv = createChatHistoryItem('model', '');
 
         let modelResponseText = '';
         for await (const chunk of result.stream) {
-            const chunkText = await chunk.text();
-            modelResponseText += chunkText;
-            let escapedResponseText = escapeHTML(modelResponseText);
-            modelDiv.innerHTML = markedParse(escapedResponseText);
+          const chunkText = await chunk.text();
+          modelResponseText += chunkText;
+          let escapedResponseText = escapeHTML(modelResponseText);
+          modelDiv.innerHTML = markedParse(escapedResponseText);
         }
+
+        addCopyButton(modelDiv, modelResponseText);
+
         chatBox.scrollTop = chatBox.scrollHeight;
-    } catch (e) {
+      } catch (e) {
         console.error('Error sending streamed message:', e);
         displayErrorMessage(`Error: ${e.message || 'Unknown error'}`);
+      }
     }
-}
 
-function displayErrorMessage(errorMessage) {
-    let errorDiv = document.createElement('div');
-    errorDiv.classList.add('chat-history-item', 'model-msg');
-    errorDiv.style.backgroundColor = '#FFD1D1';
-    errorDiv.textContent = errorMessage;
-    chatBox.appendChild(errorDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-    
-function clearChatHistory() {
-    chatBox.innerHTML = '';
-    restartChat();
-}
+    function displayErrorMessage(errorMessage) {
+      let errorDiv = document.createElement('div');
+      errorDiv.classList.add('chat-history-item', 'model-msg');
+      errorDiv.style.backgroundColor = '#FFD1D1';
+      errorDiv.textContent = errorMessage;
+      chatBox.appendChild(errorDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
-function restartChat() {
-    if (API_KEY) {
+    function clearChatHistory() {
+      chatBox.innerHTML = '';
+      restartChat();
+    }
+
+    function restartChat() {
+      if (API_KEY) {
         const genAI = new GoogleGenerativeAI(API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
         chat = model.startChat();
+      }
     }
-}
 
-document.getElementById('clearHistory').addEventListener('click', () => {
-    clearChatHistory();
-});
+    document.getElementById('clearHistory').addEventListener('click', () => {
+      clearChatHistory();
+    });
 
 
     document.getElementById('sendMsg').addEventListener('click', () => {
-        const msg = userMsg.value.trim();
-        if (msg && API_KEY) {
-            sendStreamedMessage(msg);
-        }
+      const msg = userMsg.value.trim();
+      if (msg && API_KEY) {
+        sendStreamedMessage(msg);
+      }
     });
 
-document.addEventListener('click', function(event) {
-  if (event.target && event.target.classList.contains('copy-btn')) {
-    const targetId = event.target.getAttribute('data-target');
-    const codeBlock = document.getElementById(targetId);
-    navigator.clipboard.writeText(codeBlock.textContent).then(function() {
-      event.target.textContent = 'Copied!';
-      setTimeout(() => {
-        event.target.textContent = 'Copy';
-      }, 2000);
-    }).catch(function(error) {
-      console.error('Error copying text: ', error);
+    userMsg.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        document.getElementById('sendMsg').click();
+      }
     });
-  }
-});
-    
+
+    document.addEventListener('click', function(event) {
+      if (event.target && event.target.classList.contains('copy-code-btn')) {
+        const targetId = event.target.getAttribute('data-target');
+        const codeBlock = document.getElementById(targetId);
+        navigator.clipboard.writeText(codeBlock.textContent).then(function() {
+          event.target.textContent = 'Copied!';
+          setTimeout(() => {
+            event.target.textContent = 'Copy';
+          }, 2000);
+        }).catch(function(error) {
+          console.error('Error copying text: ', error);
+        });
+      }
+    });
+
     function setCookie(name, value, days) {
-    let expires = '';
-    if (days) {
+      let expires = '';
+      if (days) {
         let date = new Date();
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
         expires = '; expires=' + date.toUTCString();
+      }
+      document.cookie = name + '=' + (value || '') + expires + '; path=/';
     }
-    document.cookie = name + '=' + (value || '') + expires + '; path=/';
-}
 
-function getCookie(name) {
-    let nameEQ = name + '=';
-    let ca = document.cookie.split(';');
-    for (let i = 0; i < ca.length; i++) {
+    function getCookie(name) {
+      let nameEQ = name + '=';
+      let ca = document.cookie.split(';');
+      for (let i = 0; i < ca.length; i++) {
         let c = ca[i];
         while (c.charAt(0) === ' ') c = c.substring(1, c.length);
         if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+      }
+      return null;
     }
-    return null;
-}
 
-function eraseCookie(name) {
-    document.cookie = name + '=; Max-Age=-99999999;';
-}
+    function eraseCookie(name) {
+      document.cookie = name + '=; Max-Age=-99999999;';
+    }
 
-function saveApiKey(apiKey) {
-    setCookie('gemini_api_key', apiKey, 365);
-}
+    function saveApiKey(apiKey) {
+      setCookie('gemini_api_key', apiKey, 365);
+    }
 
-function loadApiKey() {
-    return getCookie('gemini_api_key');
-}
-     
-document.addEventListener('DOMContentLoaded', () => {
-    const existingApiKey = loadApiKey();
-    if (existingApiKey) {
+    function loadApiKey() {
+      return getCookie('gemini_api_key');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const existingApiKey = loadApiKey();
+      if (existingApiKey) {
         API_KEY = existingApiKey;
         apiKeyInput.value = API_KEY;
         initializeChat();
-    }
-});
+      }
+    });
 
-apiKeyInput.addEventListener('change', () => {
-    API_KEY = apiKeyInput.value.trim();
-    saveApiKey(API_KEY);
-    initializeChat();
-});
+    apiKeyInput.addEventListener('change', () => {
+      API_KEY = apiKeyInput.value.trim();
+      saveApiKey(API_KEY);
+      initializeChat();
+    });
 
-function initializeChat() {
-    if (API_KEY) {
+    function initializeChat() {
+      if (API_KEY) {
         const genAI = new GoogleGenerativeAI(API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
         chat = model.startChat();
+      }
     }
-}
-     
-     userMsg.addEventListener("keydown", function(event) {
-    if (event.key === "Enter") {
+
+    userMsg.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
         event.stopPropagation();
 
         if (!event.shiftKey) {
-            event.preventDefault();
-            const start = this.selectionStart;
-            const end = this.selectionEnd;
-            this.value = this.value.slice(0, start) + "\n" + this.value.slice(end);
-            this.selectionStart = this.selectionEnd = start + 1;        
-            this.dispatchEvent(new Event('input'));
+          event.preventDefault();
+          const start = this.selectionStart;
+          const end = this.selectionEnd;
+          this.value = this.value.slice(0, start) + "\n" + this.value.slice(end);
+          this.selectionStart = this.selectionEnd = start + 1;
+          this.dispatchEvent(new Event('input'));
 
         } else {
-            document.getElementById('sendMsg').click();
+          document.getElementById('sendMsg').click();
         }
-    }
-});
-</script>
+      }
+    });
+  </script>
 </body>
 </html>
