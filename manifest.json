@@ -1,30 +1,12 @@
 {
-  "name": "ChatGPThzh",
-  "short_name": "GPThzh",
-  "description": "Chat with GPT Models",
+  "name": "GeminiUI",
+  "short_name": "Gemini",
+  "description": "Usee Interface for Gemini AI",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000",
-  "icons": [
-    {
-      "src": "/logo.webp",
-      "sizes": "256x256",
-      "type": "image/webp",
-      "purpose": "any"
-    },
-    {
-      "src": "/logo2.png",
-      "sizes": "512x512"
-    },
-    {
-      "src": "/logo.ico",
-      "sizes": "256x256"
-    }
-  ],
-  "dir": "auto",
   "lang": "en",
-  "orientation": "any",
   "display_override": [
     "standalone",
     "window-controls-overlay"
