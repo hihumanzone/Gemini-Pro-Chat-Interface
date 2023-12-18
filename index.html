@@ -14,7 +14,7 @@
     .chat-container {
   background-color: #fff;
   width: 100%;
-  max-width: 800px;
+  max-width: 600px;
   margin: 20px auto;
   padding: 20px;
   border-radius: 10px;
@@ -32,8 +32,11 @@
 
     @media screen and (orientation: landscape) {
   #chat-box {
-    height: 10vh;
+    height: auto;
   }
+      .chat-container {
+  max-width: 800px;
+      }
     }
 
     .user-input {
