@@ -57,7 +57,11 @@
 .message-container.user {
   align-items: flex-end;
 }
-    button.copy-msg-btn {
+.button-group {
+  display: flex;
+  margin-top: -5px;
+}
+    button.copy-msg-btn, button.delete-msg-btn {
       padding: 5px 10px;
       cursor: pointer;
       background-color: #f7f7f7;
@@ -65,7 +69,6 @@
       font-size: 0.8em;
       cursor: pointer;
       border: 1px solid #e1e1e8;
-      margin-top: -20px;
     }
     input, button#send, button#clear {
       padding: 10px;
@@ -210,6 +213,33 @@ const renderCodeBlocks = () => {
   });
 };
 
+function addDeleteButton(container, index) {
+  let deleteButton = document.createElement('button');
+  deleteButton.textContent = 'Delete';
+  deleteButton.classList.add('delete-msg-btn');
+  deleteButton.onclick = function() {
+    chatHistory.splice(index, 1);
+    restartChatWithUpdatedHistory();
+  };
+  container.appendChild(deleteButton);
+}
+
+async function restartChatWithUpdatedHistory() {
+    if (apiKeyInput.value) {
+      const genAI = new GoogleGenerativeAI(apiKeyInput.value);
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      chat = model.startChat({
+        history: chatHistory,
+        generationConfig: {
+          maxOutputTokens: 4096,
+        },
+      });
+      renderChat();
+    } else {
+      alert('API key is required to initialize the chat.');
+    }
+}
+
 const renderChat = () => {
   chatElement.innerHTML = '';
   chatHistory.forEach(({ role, parts }, index) => {
@@ -220,13 +250,19 @@ const renderChat = () => {
     message.classList.add('message', role);
     message.innerHTML = renderMarkdownAndMath(parts);
     messageContainer.appendChild(message);
-    
-    addCopyButton(messageContainer, parts);
-    
+
+    const buttonGroup = document.createElement('div');
+    buttonGroup.classList.add('button-group');
+
+    addCopyButton(buttonGroup, parts);
+    addDeleteButton(buttonGroup, index);
+
+    messageContainer.appendChild(buttonGroup);
+
     chatElement.appendChild(messageContainer);
+  });
 
   renderCodeBlocks();
-  });
   chatElement.scrollTop = chatElement.scrollHeight;
 };
 
@@ -331,10 +367,22 @@ document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
 
     sendButton.addEventListener('click', sendMessageStream);
 
-    clearButton.addEventListener('click', () => {
-      chatHistory = [];
-      renderChat();
-    });
+    clearButton.addEventListener('click', async () => {
+    chatHistory = [];
+    if (apiKeyInput.value) {
+        const genAI = new GoogleGenerativeAI(apiKeyInput.value);
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        chat = model.startChat({
+            history: chatHistory,
+            generationConfig: {
+                maxOutputTokens: 4096,
+            },
+        });
+    } else {
+        alert('API key is required to initialize the chat.');
+    }
+    renderChat();
+});
   </script>
 </body>
 </html>
