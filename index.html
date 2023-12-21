@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gemini Pro Chat Interface with Copy Buttons</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    #chat-container {
+      background: #fff;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    #chat {
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .message {
+      max-width: 80%;
+      margin-bottom: 5px;
+      padding: 8px;
+      border-radius: 4px;
+      background-color: #e0e0e0;
+      display: inline-block;
+    }
+    .message.user {
+      background-color: #d1ecf1;
+      text-align: right;
+    }
+    .message.model {
+      text-align: left;
+    }
+.message-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+.message-container.user {
+  align-items: flex-end;
+}
+    button.copy-msg-btn {
+      padding: 5px 10px;
+      cursor: pointer;
+      background-color: #f7f7f7;
+      border-radius: 4px;
+      font-size: 0.8em;
+      cursor: pointer;
+      border: 1px solid #e1e1e8;
+    }
+    input, button#send, button#clear {
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+    button#send, button#clear {
+      cursor: pointer;
+    }
+    #apiKeyInput {
+      width: calc(100% - 22px);
+    }
+#userInput {
+  width: calc(100% - 110px);
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  resize: vertical;
+  display: inline-block;
+  vertical-align: top;
+  resize: none;
+}
+#send {
+  width: 80px;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  display: inline-block;
+}
+    #loading {
+      display: none;
+      margin-left: 10px;
+    }
+    pre code {
+      display: block;
+      padding: 10px;
+      margin: 0 0 10px;
+      overflow: auto;
+      font-family: monospace;
+      font-size: 0.9em;
+      background-color: #f7f7f7;
+      border: 1px solid #e1e1e8;
+      border-radius: 4px;
+    }
+    code {
+      padding: 2px 4px;
+      font-family: monospace;
+      font-size: 0.9em;
+      background-color: #f7f7f7;
+      border: 1px solid #e1e1e8;
+      border-radius: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 10px;
+    }
+    table th,
+    table td {
+      padding: 8px;
+      text-align: left;
+      border: 1px solid #fff;
+    }
+    table thead th {
+      background-color: #f5f5f5;
+    }
+    blockquote {
+      padding: 10px 20px;
+      margin: 0 0 10px;
+      background-color: #f5f5f5;
+      border-left: 4px solid #dfe2e5;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+  <input type="password" id="apiKeyInput" placeholder="Enter your API key" />
+  <div id="chat-container">
+    <div id="chat"></div>
+    <textarea type="text" id="userInput" placeholder="Type your message here..." />
+    <button id="send">Send</button>
+    <button id="clear">Clear History</button>
+    <span id="loading">Loading...</span>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "@google/generative-ai": "https://esm.run/@google/generative-ai"
+      }
+    }
+  </script>
+  <script type="module">
+    import { GoogleGenerativeAI } from "@google/generative-ai";
+    
+    let chat;
+    let chatHistory = [];
+
+    const chatElement = document.getElementById('chat');
+    const userInput = document.getElementById('userInput');
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    const sendButton = document.getElementById('send');
+    const clearButton = document.getElementById('clear');
+    const loadingIndicator = document.getElementById('loading');
+
+function addCopyButton(container, text) {
+  let copyButton = document.createElement('button');
+  copyButton.textContent = 'Copy';
+  copyButton.classList.add('copy-msg-btn');
+  copyButton.onclick = function() {
+    navigator.clipboard.writeText(text).then(() => {
+      copyButton.textContent = 'Copied!';
+      setTimeout(() => copyButton.textContent = 'Copy', 2000);
+    }).catch(err => console.error('Error copying text:', err));
+  };
+  container.appendChild(copyButton);
+}
+
+function addCopyCodeButton(codeBlock) {
+  let copyCodeButton = document.createElement('button');
+  copyCodeButton.textContent = 'Copy Code';
+  copyCodeButton.classList.add('copy-msg-btn');
+  copyCodeButton.style.marginLeft = '4px';
+  copyCodeButton.onclick = function () {
+    navigator.clipboard.writeText(codeBlock.innerText).then(() => {
+      copyCodeButton.textContent = 'Copied!';
+      setTimeout(() => (copyCodeButton.textContent = 'Copy Code'), 2000);
+    }).catch(err => console.error('Error copying code:', err));
+  };
+  codeBlock.parentNode.insertBefore(copyCodeButton, codeBlock.nextSibling);
+}
+
+const renderCodeBlocks = () => {
+  document.querySelectorAll('pre code').forEach((codeBlock) => {
+    if (!codeBlock.nextSibling || !codeBlock.nextSibling.classList.contains('copy-msg-btn')) {
+      addCopyCodeButton(codeBlock);
+    }
+  });
+};
+
+const renderChat = () => {
+  chatElement.innerHTML = '';
+  chatHistory.forEach(({ role, parts }, index) => {
+    const messageContainer = document.createElement('div');
+    messageContainer.classList.add('message-container', role);
+    
+    const message = document.createElement('div');
+    message.classList.add('message', role);
+    message.innerHTML = renderMarkdownAndMath(parts);
+    messageContainer.appendChild(message);
+    
+    addCopyButton(messageContainer, parts);
+    
+    chatElement.appendChild(messageContainer);
+
+  renderCodeBlocks();
+  });
+  chatElement.scrollTop = chatElement.scrollHeight;
+};
+
+
+const saveApiKeyToLocalStorage = () => {
+    localStorage.setItem('apiKey', apiKeyInput.value);
+};
+
+const loadApiKeyFromLocalStorage = () => {
+    const savedApiKey = localStorage.getItem('apiKey');
+    if (savedApiKey) {
+        apiKeyInput.value = savedApiKey;
+        initializeChat();
+    }
+};
+
+document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
+
+
+      const renderMarkdownAndMath = (text) => {
+    let html = marked.parse(text);
+    html = html.replace(/\$\$[^\$]*\$\$/g, (match) => {
+      const math = match.slice(2, -2);
+      try {
+        return katex.renderToString(math, { displayMode: true });
+      } catch (error) {
+        console.error('KaTeX rendering error:', error);
+        return match;
+      }
+    });
+
+    html = html.replace(/\$[^\$]*\$/g, (match) => {
+      const math = match.slice(1, -1);
+      try {
+        return katex.renderToString(math, { displayMode: false });
+      } catch (error) {
+        console.error('KaTeX rendering error:', error);
+        return match;
+      }
+    });
+
+    return html;
+  };
+
+    const toggleLoading = (isLoading) => {
+      loadingIndicator.style.display = isLoading ? 'inline' : 'none';
+    };
+    
+    const initializeChat = async () => {
+      if (apiKeyInput.value) {
+        const genAI = new GoogleGenerativeAI(apiKeyInput.value);
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        chat = model.startChat();
+        chatHistory = [];
+        renderChat();
+      } else {
+        alert('API key is required to initialize the chat.');
+      }
+    };
+
+    apiKeyInput.addEventListener('change', () => {
+    saveApiKeyToLocalStorage();
+    initializeChat();
+});
+
+    const sendMessageStream = async () => {
+      if (!chat || !apiKeyInput.value) {
+        alert('You must provide an API key and initialize the chat before sending messages.');
+        return;
+      }
+
+      const msg = userInput.value.trim();
+      if (msg === '') return;
+
+      chatHistory.push({ role: 'user', parts: msg });
+      renderChat();
+      userInput.value = '';
+      toggleLoading(true);
+
+      try {
+        const result = await chat.sendMessageStream(msg);
+        let modelResponseIndex = chatHistory.length;
+
+        for await (const responseChunk of result.stream) {
+          const chunkText = await responseChunk.text();
+          if (chatHistory[modelResponseIndex]) {
+            chatHistory[modelResponseIndex] = { role: 'model', parts: chatHistory[modelResponseIndex].parts + chunkText };
+          } else {
+            chatHistory.push({ role: 'model', parts: chunkText });
+            modelResponseIndex = chatHistory.length - 1;
+          }
+          renderChat();
+        }
+        toggleLoading(false);
+      } catch (error) {
+        console.error('An error occurred during streaming:', error);
+        chatHistory.push({ role: 'model', parts: 'Error generating response.' });
+        toggleLoading(false);
+        renderChat();
+      }
+    };
+
+    sendButton.addEventListener('click', sendMessageStream);
+
+    clearButton.addEventListener('click', () => {
+      chatHistory = [];
+      renderChat();
+    });
+  </script>
+</body>
+    </html>
