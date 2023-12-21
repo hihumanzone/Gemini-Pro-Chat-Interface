@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Gemini Pro Chat Interface with Copy Buttons</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+  <title>Gemini Pro Chat Interface</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
@@ -138,10 +138,10 @@
 </head>
 <body>
 
-  <input type="password" id="apiKeyInput" placeholder="Enter your API key" />
+  <input type="password" id="apiKeyInput" placeholder="Enter your API key">
   <div id="chat-container">
     <div id="chat"></div>
-    <textarea type="text" id="userInput" placeholder="Type your message here..." />
+    <textarea id="userInput" placeholder="Type your message here..."></textarea>
     <button id="send">Send</button>
     <button id="clear">Clear History</button>
     <span id="loading">Loading...</span>
