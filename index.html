@@ -17,7 +17,6 @@ body {
   display: flex;
   flex-direction: column;
 }
-
 #chat-container {
   background: #fff;
   margin: 5px;
@@ -29,7 +28,6 @@ body {
   height: 100%;
   box-sizing: border-box;
 }
-
 #send-container,
 #manage-container,
 .button-group {
@@ -38,7 +36,6 @@ body {
   flex-direction: row;
   align-items: center;
 }
-
 #chat {
   flex-grow: 1;
   overflow-y: auto;
@@ -46,7 +43,6 @@ body {
   padding: 10px;
   margin-bottom: 10px;
 }
-
 .message {
   max-width: 80%;
   margin-bottom: 5px;
@@ -55,22 +51,18 @@ body {
   background-color: #e0e0e0;
   display: inline-block;
 }
-
 .message.user {
   background-color: #d1ecf1;
 }
-
 .message-container,
 .message-container.user {
   display: flex;
   flex-direction: column;
   margin-bottom: 10px;
 }
-
 .message-container.user {
   align-items: flex-end;
 }
-
 button.copy-msg-btn,
 button.delete-msg-btn {
   padding: 5px 10px;
@@ -79,34 +71,28 @@ button.delete-msg-btn {
   font-size: 0.8em;
   border: 1px solid #e1e1e8;
 }
-
 input, button#send, button#clear, #userInput {
   padding: 10px;
   margin: 5px 0;
   border-radius: 5px;
   border: 1px solid #ddd;
 }
-
 #apiKeyInput {
   width: calc(100% - 22px);
 }
-
 #userInput {
   width: calc(100% - 110px);
   display: inline-block;
   vertical-align: top;
   resize: none;
 }
-
 #send {
   width: 80px;
   display: inline-block;
 }
-
 #loading {
   display: none;
   margin-left: 10px;
-  text-align: center;
   align-self: center;
 }
     pre code {
