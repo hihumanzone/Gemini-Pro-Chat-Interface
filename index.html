@@ -34,7 +34,7 @@ body {
   flex-direction: row;
   align-items: center;
   }
-#manage {
+#manage-container {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -115,6 +115,7 @@ body {
   margin-left: 10px;
   text-align: center;
   align-self: center
+  border: 1px solid #ddd;
     }
     pre code {
       display: block;
@@ -165,10 +166,10 @@ body {
     <textarea id="userInput" placeholder="Type your message here..."></textarea>
     <button id="send">Send</button>
     </div>
-    <div id="manage">
+    <div id="manage-container">
     <button id="clear">Clear History</button>
     <input type="password" id="apiKeyInput" placeholder="Enter your API key">
-    <span id="loading">Generating...</span>
+    <span id="loading"> Generating... </span>
     </div>
   </div>
 
