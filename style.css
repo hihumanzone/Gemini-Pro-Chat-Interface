@@ -64,7 +64,7 @@ button.delete-msg-btn {
 }
 input, button#send, button#clear, #userInput {
   color: #fff;
-  background: #000;
+  background: #151515;
   padding: 10px;
   margin: 5px 0;
   border-radius: 5px;
@@ -72,8 +72,6 @@ input, button#send, button#clear, #userInput {
 }
 #apiKeyInput {
   width: calc(100% - 22px);
-  color: #fff;
-  background: #000;
 }
 #userInput {
   width: calc(100% - 110px);
