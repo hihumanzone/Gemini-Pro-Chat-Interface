@@ -41,13 +41,15 @@ body {
 .message.user {
   background-color: #d1ecf1;
 }
-.message-container,
-.message-container.user {
+.message-container {
   display: flex;
   flex-direction: column;
   margin-bottom: 10px;
 }
 .message-container.user {
+  align-items: flex-end;
+}
+.message-container.model {
   align-items: flex-start;
 }
 button.copy-msg-btn,
