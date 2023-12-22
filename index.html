@@ -30,7 +30,14 @@ body {
   height: 100%;
   box-sizing: border-box;
 }
-
+#send {
+  display: flex;
+  flex-direction: row;
+}
+#manage {
+  display: flex;
+  flex-direction: row;
+}
 #chat {
   flex-grow: 1;
   overflow-y: auto;
@@ -38,7 +45,6 @@ body {
   padding: 10px;
   margin-bottom: 10px;
 }
-    }
     .message {
       max-width: 80%;
       margin-bottom: 5px;
@@ -155,9 +161,13 @@ body {
   <div id="chat-container">
     <div id="chat"></div>
     <textarea id="userInput" placeholder="Type your message here..."></textarea>
+    <div id="send">
     <button id="send">Send</button>
+    </div>
+    <div id="manage">
     <button id="clear">Clear History</button>
     <span id="loading">Loading...</span>
+    </div>
   </div>
 
   <script type="importmap">
