@@ -74,6 +74,7 @@ input, button#send, button#clear, #userInput {
   display: inline-block;
   vertical-align: top;
   resize: none;
+  background-colour: #000;
 }
 #send {
   width: 80px;
