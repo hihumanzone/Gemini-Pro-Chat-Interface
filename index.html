@@ -17,6 +17,7 @@ body {
   display: flex;
   flex-direction: column;
 }
+
 #chat-container {
   background: #fff;
   margin: 5px;
@@ -28,12 +29,16 @@ body {
   height: 100%;
   box-sizing: border-box;
 }
-  #send-container, #manage-container {
+
+#send-container,
+#manage-container,
+.button-group {
   gap: 5px;
   display: flex;
   flex-direction: row;
   align-items: center;
-  }
+}
+
 #chat {
   flex-grow: 1;
   overflow-y: auto;
@@ -41,76 +46,69 @@ body {
   padding: 10px;
   margin-bottom: 10px;
 }
-    .message {
-      max-width: 80%;
-      margin-bottom: 5px;
-      padding: 8px;
-      border-radius: 4px;
-      background-color: #e0e0e0;
-      display: inline-block;
-    }
-    .message.user {
-      background-color: #d1ecf1;
-    }
-.message-container {
+
+.message {
+  max-width: 80%;
+  margin-bottom: 5px;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: #e0e0e0;
+  display: inline-block;
+}
+
+.message.user {
+  background-color: #d1ecf1;
+}
+
+.message-container,
+.message-container.user {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   margin-bottom: 10px;
 }
+
 .message-container.user {
   align-items: flex-end;
 }
-.button-group {
-  display: flex;
-  margin-top: -5px;
+
+button.copy-msg-btn,
+button.delete-msg-btn {
+  padding: 5px 10px;
+  background-color: #f7f7f7;
+  border-radius: 4px;
+  font-size: 0.8em;
+  border: 1px solid #e1e1e8;
 }
-    button.copy-msg-btn, button.delete-msg-btn {
-      padding: 5px 10px;
-      cursor: pointer;
-      background-color: #f7f7f7;
-      border-radius: 4px;
-      font-size: 0.8em;
-      cursor: pointer;
-      border: 1px solid #e1e1e8;
-    }
-    input, button#send, button#clear {
-      padding: 10px;
-      margin: 5px 0;
-      border-radius: 5px;
-      border: 1px solid #ddd;
-    }
-    button#send, button#clear {
-      cursor: pointer;
-    }
-    #apiKeyInput {
-      width: calc(100% - 22px);
-    }
+
+input, button#send, button#clear, #userInput {
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+#apiKeyInput {
+  width: calc(100% - 22px);
+}
+
 #userInput {
   width: calc(100% - 110px);
-  margin: 5px 0;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  resize: vertical;
   display: inline-block;
   vertical-align: top;
-  resize: none;
+  resize: vertical;
 }
+
 #send {
   width: 80px;
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 5px;
-  border: 1px solid #ddd;
   display: inline-block;
 }
-    #loading {
+
+#loading {
   display: none;
   margin-left: 10px;
   text-align: center;
   align-self: center;
-    }
+}
     pre code {
       display: block;
       padding: 10px;
