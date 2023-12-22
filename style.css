@@ -29,7 +29,6 @@ body {
   overflow-y: auto;
   border: 1px solid #ddd;
   padding: 10px;
-  margin-bottom: 10px;
 }
 .message {
   max-width: 80%;
@@ -49,7 +48,7 @@ body {
   margin-bottom: 10px;
 }
 .message-container.user {
-  align-items: flex-end;
+  align-items: flex-start;
 }
 button.copy-msg-btn,
 button.delete-msg-btn {
