@@ -1,0 +1,125 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  padding: 5px;
+  height: 96vh;
+  display: flex;
+  flex-direction: column;
+}
+#chat-container {
+  background: #fff;
+  border-radius: 5px;
+  padding: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+#send-container,
+#manage-container,
+.button-group {
+  gap: 5px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+#chat {
+  flex-grow: 1;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.message {
+  max-width: 80%;
+  margin-bottom: 5px;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: #e0e0e0;
+  display: inline-block;
+}
+.message.user {
+  background-color: #d1ecf1;
+}
+.message-container,
+.message-container.user {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+.message-container.user {
+  align-items: flex-end;
+}
+button.copy-msg-btn,
+button.delete-msg-btn {
+  padding: 5px 10px;
+  background-color: #f7f7f7;
+  border-radius: 4px;
+  font-size: 0.8em;
+  border: 1px solid #e1e1e8;
+}
+input, button#send, button#clear, #userInput {
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+#apiKeyInput {
+  width: calc(100% - 22px);
+}
+#userInput {
+  width: calc(100% - 110px);
+  display: inline-block;
+  vertical-align: top;
+  resize: none;
+}
+#send {
+  width: 80px;
+  display: inline-block;
+}
+#loading {
+  display: none;
+  margin-left: 10px;
+  align-self: center;
+}
+    pre code {
+      display: block;
+      padding: 10px;
+      margin: 0 0 10px;
+      overflow: auto;
+      font-family: monospace;
+      font-size: 0.9em;
+      background-color: #f7f7f7;
+      border: 1px solid #e1e1e8;
+      border-radius: 4px;
+    }
+    code {
+      padding: 2px 4px;
+      font-family: monospace;
+      font-size: 0.9em;
+      background-color: #f7f7f7;
+      border: 1px solid #e1e1e8;
+      border-radius: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 10px;
+    }
+    table th,
+    table td {
+      padding: 8px;
+      text-align: left;
+      border: 1px solid #fff;
+    }
+    table thead th {
+      background-color: #f5f5f5;
+    }
+    blockquote {
+      padding: 10px 20px;
+      margin: 0 0 10px;
+      background-color: #f5f5f5;
+      border-left: 4px solid #dfe2e5;
+      font-style: italic;
+    }
