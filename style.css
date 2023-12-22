@@ -71,9 +71,11 @@ input, button#send, button#clear, #userInput {
   border: 1px solid #222222;
 }
 #apiKeyInput {
+  background: #010101;
   width: calc(100% - 22px);
 }
 #userInput {
+  background: #010101;
   width: calc(100% - 110px);
   display: inline-block;
   vertical-align: top;
