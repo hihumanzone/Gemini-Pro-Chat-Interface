@@ -18,7 +18,6 @@ body {
   display: flex;
   flex-direction: column;
 }
-
 #chat-container {
   background: #fff;
   margin: 5px;
@@ -31,11 +30,9 @@ body {
   box-sizing: border-box;
 }
 #send-container {
-  display: flex;
   flex-direction: row;
 }
 #manage {
-  display: flex;
   flex-direction: row;
 }
 #chat {
@@ -320,7 +317,7 @@ document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
   };
     
     const toggleLoading = (isLoading) => {
-      loadingIndicator.style.display = isLoading ? 'block' : 'none';
+      loadingIndicator.style.display = isLoading ? 'flex' : 'none';
     };
     
     const initializeChat = async () => {
