@@ -57,10 +57,10 @@ button.copy-msg-btn,
 button.delete-msg-btn {
   color: #fff;
   padding: 5px 10px;
-  background-color: #212128;
+  background-color: #080808;
   border-radius: 4px;
   font-size: 0.8em;
-  border: 1px solid #17171e;
+  border: 1px solid #212128;
 }
 input, button#send, button#clear, #userInput {
   color: #fff;
