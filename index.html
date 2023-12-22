@@ -318,9 +318,9 @@ document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
 
     return html;
   };
-
+    
     const toggleLoading = (isLoading) => {
-      loadingIndicator.style.display = isLoading ? 'inline' : 'none';
+      loadingIndicator.style.display = isLoading ? 'block' : 'none';
     };
     
     const initializeChat = async () => {
