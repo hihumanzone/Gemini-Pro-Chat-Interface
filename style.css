@@ -55,6 +55,7 @@ body {
 }
 button.copy-msg-btn,
 button.delete-msg-btn {
+  color: #fff;
   padding: 5px 10px;
   background-color: #080808;
   border-radius: 4px;
@@ -62,6 +63,8 @@ button.delete-msg-btn {
   border: 1px solid #17171e;
 }
 input, button#send, button#clear, #userInput {
+  color: #fff;
+  background: #000;
   padding: 10px;
   margin: 5px 0;
   border-radius: 5px;
@@ -69,13 +72,14 @@ input, button#send, button#clear, #userInput {
 }
 #apiKeyInput {
   width: calc(100% - 22px);
+  color: #fff;
+  background: #000;
 }
 #userInput {
   width: calc(100% - 110px);
   display: inline-block;
   vertical-align: top;
   resize: none;
-  background-colour: #000;
 }
 #send {
   width: 80px;
