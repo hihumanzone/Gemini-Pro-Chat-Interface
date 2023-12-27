@@ -1,84 +1,80 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+    import { GoogleGenerativeAI } from "@google/generative-ai";
+    
+    let chat;
+    let chatHistory = [];
 
-const chatElement = document.getElementById('chat');
-const userInput = document.getElementById('userInput');
-const apiKeyInput = document.getElementById('apiKeyInput');
-const sendButton = document.getElementById('send');
-const clearButton = document.getElementById('clear');
-const loadingIndicator = document.getElementById('loading');
-const manageContainer = document.getElementById('manage-container');
+    const chatElement = document.getElementById('chat');
+    const userInput = document.getElementById('userInput');
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    const sendButton = document.getElementById('send');
+    const clearButton = document.getElementById('clear');
+    const loadingIndicator = document.getElementById('loading');
 
-let chat;
-let chatHistory = [];
-
-document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
-apiKeyInput.addEventListener('change', handleApiKeyChange);
-sendButton.addEventListener('click', sendMessageStream);
-clearButton.addEventListener('click', clearChat);
-document.getElementById('toggle-manage').addEventListener('click', toggleManageContainer);
-userInput.addEventListener('input', () => adjustTextareaHeight(userInput));
-
-function addButton(container, text, classNames, eventHandler) {
-    const button = document.createElement('button');
-    button.textContent = text;
-    button.classList.add(...classNames);
-    button.onclick = eventHandler;
-    container.appendChild(button);
-}
-
-function addCopyButton(container, textContent) {
-    addButton(container, 'Copy', ['copy-msg-btn'], () => {
-        navigator.clipboard.writeText(textContent).then(() => {
-            button.textContent = 'Copied!';
-            setTimeout(() => button.textContent = 'Copy', 2000);
-        }).catch(err => console.error('Error copying text:', err));
-    });
-}
-
-function addDeleteButton(container, index) {
-    addButton(container, 'Delete', ['delete-msg-btn'], () => {
-        chatHistory.splice(index, 1);
-        restartChat();
-    });
-}
-
-function initializeChat() {
-    if (!apiKeyInput.value) {
-        alert('API key is required to initialize the chat.');
-        return;
-    }
-    const genAI = new GoogleGenerativeAI(apiKeyInput.value);
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    chat = model.startChat({
-        history: chatHistory,
-        generationConfig: {
-            maxOutputTokens: 16384,
-        },
-    });
-}
-
-function restartChat() {
-    initializeChat();
-    renderChat();
+function addCopyButton(container, text) {
+  let copyButton = document.createElement('button');
+  copyButton.textContent = 'Copy';
+  copyButton.classList.add('copy-msg-btn');
+  copyButton.onclick = function() {
+    navigator.clipboard.writeText(text).then(() => {
+      copyButton.textContent = 'Copied!';
+      setTimeout(() => copyButton.textContent = 'Copy', 2000);
+    }).catch(err => console.error('Error copying text:', err));
+  };
+  container.appendChild(copyButton);
 }
 
 function addCopyCodeButton(codeBlock) {
-    addButton(codeBlock.parentNode, 'Copy Code', ['copy-msg-btn'], () => {
-        navigator.clipboard.writeText(codeBlock.innerText).then(() => {
-            button.textContent = 'Copied!';
-            setTimeout(() => button.textContent = 'Copy Code', 2000);
-        }).catch(err => console.error('Error copying code:', err));
-    });
+  let copyCodeButton = document.createElement('button');
+  copyCodeButton.textContent = 'Copy Code';
+  copyCodeButton.classList.add('copy-msg-btn');
+  copyCodeButton.style.marginLeft = '4px';
+  copyCodeButton.onclick = function () {
+    navigator.clipboard.writeText(codeBlock.innerText).then(() => {
+      copyCodeButton.textContent = 'Copied!';
+      setTimeout(() => (copyCodeButton.textContent = 'Copy Code'), 2000);
+    }).catch(err => console.error('Error copying code:', err));
+  };
+  codeBlock.parentNode.insertBefore(copyCodeButton, codeBlock.nextSibling);
 }
 
-function renderChat() {
-    chatElement.innerHTML = '';
-    chatHistory.forEach((messageObject, index) => renderMessage(messageObject, index));
-    renderCodeBlocks();
-    chatElement.scrollTop = chatElement.scrollHeight;
+const renderCodeBlocks = () => {
+  document.querySelectorAll('pre code').forEach((codeBlock) => {
+    if (!codeBlock.nextSibling || !codeBlock.nextSibling.classList.contains('copy-msg-btn')) {
+      addCopyCodeButton(codeBlock);
+    }
+  });
+};
+
+function addDeleteButton(container, index) {
+  let deleteButton = document.createElement('button');
+  deleteButton.textContent = 'Delete';
+  deleteButton.classList.add('delete-msg-btn');
+  deleteButton.onclick = function() {
+    chatHistory.splice(index, 1);
+    restartChatWithUpdatedHistory();
+  };
+  container.appendChild(deleteButton);
 }
 
-function renderMessage({ role, parts }, index) {
+async function restartChatWithUpdatedHistory() {
+    if (apiKeyInput.value) {
+      const genAI = new GoogleGenerativeAI(apiKeyInput.value);
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      chat = model.startChat({
+        history: chatHistory,
+        generationConfig: {
+          maxOutputTokens: 16384,
+        },
+      });
+      renderChat();
+    } else {
+      alert('API key is required to initialize the chat.');
+    }
+}
+
+const renderChat = () => {
+  chatElement.innerHTML = '';
+  chatHistory.forEach(({ role, parts }, index) => {
     const messageContainer = document.createElement('div');
     messageContainer.classList.add('message-container', role);
     
@@ -96,17 +92,29 @@ function renderMessage({ role, parts }, index) {
     messageContainer.appendChild(buttonGroup);
 
     chatElement.appendChild(messageContainer);
-}
+  });
 
-function renderCodeBlocks() {
-    document.querySelectorAll('pre code').forEach((codeBlock) => {
-        if (!codeBlock.nextSibling || !codeBlock.nextSibling.classList.contains('copy-msg-btn')) {
-        addCopyCodeButton(codeBlock);
-        }
-    });
-}
+  renderCodeBlocks();
+  chatElement.scrollTop = chatElement.scrollHeight;
+};
 
-const renderMarkdownAndMath = (text) => {
+
+const saveApiKeyToLocalStorage = () => {
+    localStorage.setItem('apiKey', apiKeyInput.value);
+};
+
+const loadApiKeyFromLocalStorage = () => {
+    const savedApiKey = localStorage.getItem('apiKey');
+    if (savedApiKey) {
+        apiKeyInput.value = savedApiKey;
+        initializeChat();
+    }
+};
+
+document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
+
+
+      const renderMarkdownAndMath = (text) => {
     let html = marked.parse(text);
     html = html.replace(/\$\$[^\$]*\$\$/g, (match) => {
       const math = match.slice(2, -2);
@@ -130,25 +138,29 @@ const renderMarkdownAndMath = (text) => {
 
     return html;
   };
+    
+    const toggleLoading = (isLoading) => {
+      loadingIndicator.style.display = isLoading ? 'flex' : 'none';
+    };
+    
+    const initializeChat = async () => {
+      if (apiKeyInput.value) {
+        const genAI = new GoogleGenerativeAI(apiKeyInput.value);
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        chat = model.startChat();
+        chatHistory = [];
+        renderChat();
+      } else {
+        alert('API key is required to initialize the chat.');
+      }
+    };
 
-function toggleLoading(isLoading) {
-    loadingIndicator.style.display = isLoading ? 'flex' : 'none';
-}
-
-function handleApiKeyChange() {
-    localStorage.setItem('apiKey', apiKeyInput.value);
+    apiKeyInput.addEventListener('change', () => {
+    saveApiKeyToLocalStorage();
     initializeChat();
-}
+});
 
-function loadApiKeyFromLocalStorage() {
-    const savedApiKey = localStorage.getItem('apiKey');
-    if (savedApiKey) {
-        apiKeyInput.value = savedApiKey;
-        initializeChat();
-    }
-}
-
-const sendMessageStream = async () => {
+    const sendMessageStream = async () => {
       if (!chat || !apiKeyInput.value) {
         alert('You must provide an API key and initialize the chat before sending messages.');
         return;
@@ -186,16 +198,34 @@ const sendMessageStream = async () => {
       }
     };
 
-function clearChat() {
+    sendButton.addEventListener('click', sendMessageStream);
+
+    clearButton.addEventListener('click', async () => {
     chatHistory = [];
-    restartChat();
-}
+    if (apiKeyInput.value) {
+        const genAI = new GoogleGenerativeAI(apiKeyInput.value);
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        chat = model.startChat({
+            history: chatHistory,
+            generationConfig: {
+                maxOutputTokens: 16384,
+            },
+        });
+    } else {
+        alert('API key is required to initialize the chat.');
+    }
+    renderChat();
+});
 
-function toggleManageContainer() {
-    manageContainer.classList.toggle('hidden');
-}
 
-function adjustTextareaHeight(element) {
-    element.style.height = '0px';
-    element.style.height = `${Math.max(element.scrollHeight)}px`;
-}
+document.querySelector('button#toggle-manage').addEventListener('click', () => {
+  const manageContainer = document.getElementById('manage-container');
+  manageContainer.classList.toggle('hidden');
+});
+
+const adjustTextareaHeight = (element) => {
+    element.style.height = "0px";
+    element.style.height = Math.max(element.scrollHeight) + "px";
+};
+
+userInput.addEventListener('input', () => adjustTextareaHeight(userInput));
