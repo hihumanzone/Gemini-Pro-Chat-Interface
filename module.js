@@ -1,14 +1,14 @@
-    import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
     
-    let chat;
-    let chatHistory = [];
+let chat;
+let chatHistory = [];
 
-    const chatElement = document.getElementById('chat');
-    const userInput = document.getElementById('userInput');
-    const apiKeyInput = document.getElementById('apiKeyInput');
-    const sendButton = document.getElementById('send');
-    const clearButton = document.getElementById('clear');
-    const loadingIndicator = document.getElementById('loading');
+const chatElement = document.getElementById('chat');
+const userInput = document.getElementById('userInput');
+const apiKeyInput = document.getElementById('apiKeyInput');
+const sendButton = document.getElementById('send');
+const clearButton = document.getElementById('clear');
+const loadingIndicator = document.getElementById('loading');
 
 function addCopyButton(container, text) {
   let copyButton = document.createElement('button');
