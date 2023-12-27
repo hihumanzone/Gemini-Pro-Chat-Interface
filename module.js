@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
       }
     };
 
-    apiKeyInput.addEventListener('change', () => {
+    apiKeyInput.addEventListener('input', () => {
     saveApiKeyToLocalStorage();
     initializeChat();
 });
