@@ -172,6 +172,7 @@ document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
       chatHistory.push({ role: 'user', parts: msg });
       renderChat();
       userInput.value = '';
+      adjustTextareaHeight(userInput);
       toggleLoading(true);
 
       try {
@@ -223,8 +224,8 @@ document.querySelector('button#toggle-manage').addEventListener('click', () => {
 });
 
 const adjustTextareaHeight = (element) => {
-  element.style.height = 'auto';
-  element.style.height = Math.min(element.scrollHeight, 120) + 'px';
+    element.style.height = "0px";
+    element.style.height = Math.max(element.scrollHeight, element.clientHeight) + "px";
 };
 
 userInput.addEventListener('input', () => adjustTextareaHeight(userInput));
