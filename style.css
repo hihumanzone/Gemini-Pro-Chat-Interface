@@ -25,6 +25,16 @@ body {
   flex-direction: row;
   align-items: center;
 }
+.message-container:hover .button-group {
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0s, opacity 300ms;
+}
+.button-group {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear 300ms, opacity 300ms;
+}
 #chat {
   flex-grow: 1;
   overflow-y: auto;
