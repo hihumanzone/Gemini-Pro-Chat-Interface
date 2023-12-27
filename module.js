@@ -113,7 +113,6 @@ const loadApiKeyFromLocalStorage = () => {
 
 document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
 
-
 const renderMarkdownAndMath = (text) => {
     let html = marked.parse(text);
     html = html.replace(/\$\$[^\$]*\$\$/g, (match) => {
@@ -161,9 +160,7 @@ const initializeChat = async () => {
 };
 
 apiKeyInput.addEventListener('change', saveApiKeyToLocalStorage);
-apiKeyInput.addEventListener('change', () => {
-    initializeChat();
-});
+apiKeyInput.addEventListener('change', initializeChat);
 
     const sendMessageStream = async () => {
       if (!chat || !apiKeyInput.value) {
@@ -203,9 +200,9 @@ apiKeyInput.addEventListener('change', () => {
       }
     };
 
-    sendButton.addEventListener('click', sendMessageStream);
+sendButton.addEventListener('click', sendMessageStream);
 
-    clearButton.addEventListener('click', initializeChat);
+clearButton.addEventListener('click', initializeChat);
 
 document.querySelector('button#toggle-manage').addEventListener('click', () => {
   const manageContainer = document.getElementById('manage-container');
