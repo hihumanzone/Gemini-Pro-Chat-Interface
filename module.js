@@ -201,6 +201,7 @@ const sendMessageStream = async () => {
 };
 
 sendButton.addEventListener('click', sendMessageStream);
+
 clearButton.addEventListener('click', initializeChat);
 
 document.querySelector('button#toggle-manage').addEventListener('click', () => {
