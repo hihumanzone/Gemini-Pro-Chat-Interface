@@ -63,6 +63,7 @@ h1 {
   border-radius: 4px;
   background-color: #1f1f1f;
   display: inline-block;
+  box-shadow: 0 2px 30px rgba(255, 255, 255, 0.1);
 }
 .message.user {
   background-color: #0e292e;
