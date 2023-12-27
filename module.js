@@ -224,7 +224,7 @@ document.querySelector('button#toggle-manage').addEventListener('click', () => {
 });
 
 const adjustTextareaHeight = (element) => {
-    element.style.height = "0px";
+    element.style.height = "20px";
     element.style.height = Math.max(element.scrollHeight) + "px";
 };
 
