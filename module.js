@@ -63,7 +63,7 @@ async function restartChatWithUpdatedHistory() {
       chat = model.startChat({
         history: chatHistory,
         generationConfig: {
-          maxOutputTokens: 4096,
+          maxOutputTokens: 16384,
         },
       });
       renderChat();
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
       }
     };
 
-    apiKeyInput.addEventListener('input', () => {
+    apiKeyInput.addEventListener('change', () => {
     saveApiKeyToLocalStorage();
     initializeChat();
 });
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
         chat = model.startChat({
             history: chatHistory,
             generationConfig: {
-                maxOutputTokens: 4096,
+                maxOutputTokens: 16384,
             },
         });
     } else {
