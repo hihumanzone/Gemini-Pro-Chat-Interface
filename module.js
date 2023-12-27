@@ -193,8 +193,7 @@ document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
     initializeChat();
 });
 
-// Asynchronous function to send a message stream
-const sendMessageStream = async (messageOverride) => {
+const sendMessageStream = async (messageOverride = null) => {
   if (!chat || !apiKeyInput.value) {
     alert('You must provide an API key and initialize the chat before sending messages.');
     return;
@@ -203,18 +202,24 @@ const sendMessageStream = async (messageOverride) => {
   const msg = messageOverride || userInput.value.trim();
   if (msg === '') return;
 
+  // If resending a message, we don't push it into the chat history again,
+  // as it's already there from the previous attempt.
+  if (!messageOverride) {
+    chatHistory.push({ role: 'user', parts: msg });
+  }
+  renderChat();
+  
+  // Clear the user input field only if it's not a regeneration
+  if (!messageOverride) {
+    userInput.value = '';
+  }
+
   toggleLoading(true);
 
   try {
-    if (!messageOverride) {
-      chatHistory.push({ role: 'user', parts: msg });
-      renderChat();
-    }
-
     const result = await chat.sendMessageStream(msg);
-
-    // Process the response stream
     let modelResponseIndex = chatHistory.length;
+
     for await (const responseChunk of result.stream) {
       const chunkText = await responseChunk.text();
       if (chatHistory[modelResponseIndex]) {
@@ -225,7 +230,6 @@ const sendMessageStream = async (messageOverride) => {
       }
       renderChat();
     }
-
     toggleLoading(false);
   } catch (error) {
     console.error('An error occurred during streaming:', error);
