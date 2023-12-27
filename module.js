@@ -114,7 +114,7 @@ const loadApiKeyFromLocalStorage = () => {
 document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
 
 
-      const renderMarkdownAndMath = (text) => {
+const renderMarkdownAndMath = (text) => {
     let html = marked.parse(text);
     html = html.replace(/\$\$[^\$]*\$\$/g, (match) => {
       const math = match.slice(2, -2);
@@ -143,22 +143,25 @@ document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
       loadingIndicator.style.display = isLoading ? 'flex' : 'none';
     };
     
-    const initializeChat = async () => {
+const initializeChat = async () => {
+    if (apiKeyInput.value) {
         chatHistory = [];
         const genAI = new GoogleGenerativeAI(apiKeyInput.value);
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-        chat = model.startChat({
+        chat = await model.startChat({
             history: [],
             generationConfig: {
                 maxOutputTokens: 16384,
             },
         });
+        renderChat();
     } else {
         alert('API key is required to initialize the chat.');
     }
-    renderChat();
-    apiKeyInput.addEventListener('change', () => {
-    saveApiKeyToLocalStorage();
+};
+
+apiKeyInput.addEventListener('change', saveApiKeyToLocalStorage);
+apiKeyInput.addEventListener('change', () => {
     initializeChat();
 });
 
