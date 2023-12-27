@@ -224,15 +224,12 @@ document.querySelector('button#toggle-manage').addEventListener('click', () => {
 });
 
 const adjustTextareaHeight = (element) => {
-  const minHeight = parseInt(window.getComputedStyle(element).getPropertyValue('min-height'), 10);
-  element.style.height = 'auto';
-  if (element.value === "") {
-    element.style.height = `20px`;
-  } else {
-    element.scrollTop = 0;
-    const newHeight = Math.max(element.scrollHeight, minHeight);
-    element.style.height = `${newHeight}px`;
-  }
+    if (element.value === '') {
+        element.style.height = '20px';
+    } else {
+        element.style.height = 'auto';
+        element.style.height = element.scrollHeight + 'px';
+    }
 };
 
 userInput.addEventListener('input', () => adjustTextareaHeight(userInput));
