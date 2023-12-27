@@ -62,7 +62,7 @@ button.delete-msg-btn {
   font-size: 0.8em;
   border: 1px solid #212128;
 }
-input, button#send, button#clear, #userInput {
+input, button#send, button#clear, #userInput, button#toggle-manage {
   color: #fff;
   background: #151515;
   padding: 10px;
@@ -75,6 +75,8 @@ input, button#send, button#clear, #userInput {
   width: calc(100% - 22px);
 }
 #userInput {
+  min-height: 20px;
+  max-height: 120px;
   background: #010101;
   width: calc(100% - 110px);
   display: inline-block;
@@ -83,6 +85,10 @@ input, button#send, button#clear, #userInput {
 }
 #send {
   width: 80px;
+  display: inline-block;
+}
+#toggle-manage {
+  width: 40px;
   display: inline-block;
 }
 #loading {
@@ -130,3 +136,6 @@ input, button#send, button#clear, #userInput {
       border-left: 4px solid #1a1d20;
       font-style: italic;
     }
+.hidden {
+    display: none;
+}
