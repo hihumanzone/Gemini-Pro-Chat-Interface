@@ -137,5 +137,5 @@ input, button#send, button#clear, #userInput, button#toggle-manage {
       font-style: italic;
     }
 .hidden {
-    display: none;
+    display: none!important;
 }
