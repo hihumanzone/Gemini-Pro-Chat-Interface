@@ -72,6 +72,12 @@ async function restartChatWithUpdatedHistory() {
     }
 }
 
+function sanitizeHTML(str) {
+  const temp = document.createElement('div');
+  temp.textContent = str;
+  return temp.innerHTML;
+}
+
 const renderChat = () => {
   chatElement.innerHTML = '';
   chatHistory.forEach(({ role, parts }, index) => {
@@ -80,7 +86,7 @@ const renderChat = () => {
     
     const message = document.createElement('div');
     message.classList.add('message', role);
-    message.innerHTML = renderMarkdownAndMath(parts);
+    message.innerHTML = sanitizeHTML(renderMarkdownAndMath(parts));
     messageContainer.appendChild(message);
 
     const buttonGroup = document.createElement('div');
