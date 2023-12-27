@@ -7,15 +7,19 @@ body {
   display: flex;
   flex-direction: column;
 }
-header h1 {
+h1 {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 1.5rem;
-  color: #F2F3F4;
+  font-weight: normal;
+  color: #ddd;
   text-align: center;
-  padding: 5px;
   margin: 0;
-  background-color: #333;
-  border-bottom: 4px solid #222;
-  box-shadow: 0 2px 10px rgba(255,255,255,0.2);
+  padding: 0.25em;
+  letter-spacing: -1px;
+  line-height: 1.2;
+  word-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 0 2px 20px rgba(255,255,255, 0.5);
 }
 #chat-container {
   height: calc(100vh - 55px);
