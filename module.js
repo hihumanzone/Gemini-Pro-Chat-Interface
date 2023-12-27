@@ -86,7 +86,7 @@ const renderChat = () => {
     
     const message = document.createElement('div');
     message.classList.add('message', role);
-    message.innerHTML = sanitizeHTML(renderMarkdownAndMath(parts));
+    message.innerHTML = renderMarkdownAndMath(sanitizeHTML(parts));
     messageContainer.appendChild(message);
 
     const buttonGroup = document.createElement('div');
