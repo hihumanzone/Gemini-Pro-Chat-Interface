@@ -103,6 +103,7 @@ input, button#send, button#clear, #userInput, button#toggle-manage {
   display: inline-block;
   vertical-align: top;
   resize: none;
+  padding: 8px;
 }
 #send {
   width: 80px;
