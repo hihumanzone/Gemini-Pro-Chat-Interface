@@ -162,46 +162,45 @@ const initializeChat = async () => {
 apiKeyInput.addEventListener('change', saveApiKeyToLocalStorage);
 apiKeyInput.addEventListener('change', initializeChat);
 
-    const sendMessageStream = async () => {
-      if (!chat || !apiKeyInput.value) {
-        alert('You must provide an API key and initialize the chat before sending messages.');
-        return;
+const sendMessageStream = async () => {
+  if (!chat || !apiKeyInput.value) {
+    alert('You must provide an API key and initialize the chat before sending messages.');
+    return;
+  }
+
+  const msg = userInput.value.trim();
+  if (msg === '') return;
+
+  chatHistory.push({ role: 'user', parts: msg });
+  renderChat();
+  userInput.value = '';
+  adjustTextareaHeight(userInput);
+  toggleLoading(true);
+
+  try {
+    const result = await chat.sendMessageStream(msg);
+    let modelResponseIndex = chatHistory.length;
+
+    for await (const responseChunk of result.stream) {
+      const chunkText = await responseChunk.text();
+      if (chatHistory[modelResponseIndex]) {
+        chatHistory[modelResponseIndex] = { role: 'model', parts: chatHistory[modelResponseIndex].parts + chunkText };
+      } else {
+        chatHistory.push({ role: 'model', parts: chunkText });
+        modelResponseIndex = chatHistory.length - 1;
       }
-
-      const msg = userInput.value.trim();
-      if (msg === '') return;
-
-      chatHistory.push({ role: 'user', parts: msg });
       renderChat();
-      userInput.value = '';
-      adjustTextareaHeight(userInput);
-      toggleLoading(true);
-
-      try {
-        const result = await chat.sendMessageStream(msg);
-        let modelResponseIndex = chatHistory.length;
-
-        for await (const responseChunk of result.stream) {
-          const chunkText = await responseChunk.text();
-          if (chatHistory[modelResponseIndex]) {
-            chatHistory[modelResponseIndex] = { role: 'model', parts: chatHistory[modelResponseIndex].parts + chunkText };
-          } else {
-            chatHistory.push({ role: 'model', parts: chunkText });
-            modelResponseIndex = chatHistory.length - 1;
-          }
-          renderChat();
-        }
-        toggleLoading(false);
-      } catch (error) {
-        console.error(error);
-        chatHistory.push({ role: 'model', parts: error.message });
-        toggleLoading(false);
-        renderChat();
-      }
-    };
+    }
+    toggleLoading(false);
+  } catch (error) {
+    console.error(error);
+    chatHistory.push({ role: 'model', parts: error.message });
+    toggleLoading(false);
+    renderChat();
+  }
+};
 
 sendButton.addEventListener('click', sendMessageStream);
-
 clearButton.addEventListener('click', initializeChat);
 
 document.querySelector('button#toggle-manage').addEventListener('click', () => {
