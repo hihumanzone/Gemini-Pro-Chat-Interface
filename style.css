@@ -11,7 +11,7 @@ header h1 {
   font-size: 1.5rem;
   color: #F2F3F4;
   text-align: center;
-  padding: 5px 0;
+  padding: 5px;
   margin: 0;
   background-color: #333;
   border-bottom: 4px solid #222;
@@ -55,7 +55,7 @@ header h1 {
 .message {
   max-width: 80%;
   margin-bottom: 5px;
-  padding: 0 8px;
+  padding: 0 10px;
   border-radius: 4px;
   background-color: #1f1f1f;
   display: inline-block;
