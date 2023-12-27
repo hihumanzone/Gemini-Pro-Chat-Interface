@@ -96,7 +96,7 @@ input, button#send, button#clear, #userInput, button#toggle-manage {
   width: calc(100% - 22px);
 }
 #userInput {
-  height: 25px;
+  height: 30px;
   max-height: 120px;
   background: #010101;
   width: calc(100% - 110px);
