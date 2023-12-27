@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
         toggleLoading(false);
       } catch (error) {
         console.error('An error occurred during streaming:', error);
-        chatHistory.push({ role: 'model', parts: 'Error generating response.' });
+        chatHistory.push({ role: 'model', parts: 'Error: ' + error.message });
         toggleLoading(false);
         renderChat();
       }
