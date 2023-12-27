@@ -144,17 +144,19 @@ document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
     };
     
     const initializeChat = async () => {
-      if (apiKeyInput.value) {
+        chatHistory = [];
         const genAI = new GoogleGenerativeAI(apiKeyInput.value);
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-        chat = model.startChat();
-        chatHistory = [];
-        renderChat();
-      } else {
+        chat = model.startChat({
+            history: [],
+            generationConfig: {
+                maxOutputTokens: 16384,
+            },
+        });
+    } else {
         alert('API key is required to initialize the chat.');
-      }
-    };
-
+    }
+    renderChat();
     apiKeyInput.addEventListener('change', () => {
     saveApiKeyToLocalStorage();
     initializeChat();
@@ -200,23 +202,7 @@ document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
 
     sendButton.addEventListener('click', sendMessageStream);
 
-    clearButton.addEventListener('click', async () => {
-    chatHistory = [];
-    if (apiKeyInput.value) {
-        const genAI = new GoogleGenerativeAI(apiKeyInput.value);
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-        chat = model.startChat({
-            history: chatHistory,
-            generationConfig: {
-                maxOutputTokens: 16384,
-            },
-        });
-    } else {
-        alert('API key is required to initialize the chat.');
-    }
-    renderChat();
-});
-
+    clearButton.addEventListener('click', initializeChat);
 
 document.querySelector('button#toggle-manage').addEventListener('click', () => {
   const manageContainer = document.getElementById('manage-container');
