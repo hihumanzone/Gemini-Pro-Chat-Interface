@@ -56,36 +56,6 @@ function addDeleteButton(container, index) {
   container.appendChild(deleteButton);
 }
 
-// Add a Regenerate button functionality
-function addRegenerateButton(container) {
-  let regenerateButton = document.createElement('button');
-  regenerateButton.textContent = 'Regenerate';
-  regenerateButton.classList.add('regenerate-msg-btn');
-  regenerateButton.onclick = regenerateLastUserMessage;
-  container.appendChild(regenerateButton);
-}
-
-async function regenerateLastUserMessage() {
-  if (chatHistory.length < 2) {
-    alert('No recent interaction to regenerate.');
-    return;
-  }
-
-  // Log the latest user message
-  const lastUserMessageIndex = chatHistory.length - 2;
-  console.log('Latest user message:', chatHistory[lastUserMessageIndex].parts);
-
-  // Remove the latest messages (user and model)
-  chatHistory.splice(lastUserMessageIndex, 2);
-  
-  // Restart the chat with updated history
-  await restartChatWithUpdatedHistory();
-  
-  // Resend the user's message
-  await sendMessageStream(chatHistory[lastUserMessageIndex].parts);
-}
-
-
 async function restartChatWithUpdatedHistory() {
     if (apiKeyInput.value) {
       const genAI = new GoogleGenerativeAI(apiKeyInput.value);
@@ -118,9 +88,6 @@ const renderChat = () => {
 
     addCopyButton(buttonGroup, parts);
     addDeleteButton(buttonGroup, index);
-    if (chatHistory.length && chatHistory[chatHistory.length - 1].role === 'model') {
-    addRegenerateButton(chatElement);
-    }
 
     messageContainer.appendChild(buttonGroup);
 
@@ -193,52 +160,42 @@ document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
     initializeChat();
 });
 
-const sendMessageStream = async (messageOverride = null) => {
-  if (!chat || !apiKeyInput.value) {
-    alert('You must provide an API key and initialize the chat before sending messages.');
-    return;
-  }
-
-  const msg = messageOverride || userInput.value.trim();
-  if (msg === '') return;
-
-  // If resending a message, we don't push it into the chat history again,
-  // as it's already there from the previous attempt.
-  if (!messageOverride) {
-    chatHistory.push({ role: 'user', parts: msg });
-  }
-  renderChat();
-  
-  // Clear the user input field only if it's not a regeneration
-  if (!messageOverride) {
-    userInput.value = '';
-  }
-
-  toggleLoading(true);
-
-  try {
-    const result = await chat.sendMessageStream(msg);
-    let modelResponseIndex = chatHistory.length;
-
-    for await (const responseChunk of result.stream) {
-      const chunkText = await responseChunk.text();
-      if (chatHistory[modelResponseIndex]) {
-        chatHistory[modelResponseIndex] = { role: 'model', parts: chatHistory[modelResponseIndex].parts + chunkText };
-      } else {
-        chatHistory.push({ role: 'model', parts: chunkText });
-        modelResponseIndex = chatHistory.length - 1;
+    const sendMessageStream = async () => {
+      if (!chat || !apiKeyInput.value) {
+        alert('You must provide an API key and initialize the chat before sending messages.');
+        return;
       }
-      renderChat();
-    }
-    toggleLoading(false);
-  } catch (error) {
-    console.error('An error occurred during streaming:', error);
-    chatHistory.push({ role: 'model', parts: 'Error generating response.' });
-    toggleLoading(false);
-    renderChat();
-  }
-};
 
+      const msg = userInput.value.trim();
+      if (msg === '') return;
+
+      chatHistory.push({ role: 'user', parts: msg });
+      renderChat();
+      userInput.value = '';
+      toggleLoading(true);
+
+      try {
+        const result = await chat.sendMessageStream(msg);
+        let modelResponseIndex = chatHistory.length;
+
+        for await (const responseChunk of result.stream) {
+          const chunkText = await responseChunk.text();
+          if (chatHistory[modelResponseIndex]) {
+            chatHistory[modelResponseIndex] = { role: 'model', parts: chatHistory[modelResponseIndex].parts + chunkText };
+          } else {
+            chatHistory.push({ role: 'model', parts: chunkText });
+            modelResponseIndex = chatHistory.length - 1;
+          }
+          renderChat();
+        }
+        toggleLoading(false);
+      } catch (error) {
+        console.error('An error occurred during streaming:', error);
+        chatHistory.push({ role: 'model', parts: 'Error generating response.' });
+        toggleLoading(false);
+        renderChat();
+      }
+    };
 
     sendButton.addEventListener('click', sendMessageStream);
 
