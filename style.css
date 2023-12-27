@@ -96,14 +96,13 @@ input, button#send, button#clear, #userInput, button#toggle-manage {
   width: calc(100% - 22px);
 }
 #userInput {
-  height: 30px;
+  height: 35px;
   max-height: 120px;
   background: #010101;
   width: calc(100% - 110px);
   display: inline-block;
   vertical-align: top;
   resize: none;
-  padding: 8px;
 }
 #send {
   width: 80px;
