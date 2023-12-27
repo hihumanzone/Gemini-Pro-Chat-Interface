@@ -225,8 +225,9 @@ document.querySelector('button#toggle-manage').addEventListener('click', () => {
 
 const adjustTextareaHeight = (element) => {
     if (element.value === '') {
-        element.style.height = '25px';
+        element.style.height = '30px';
     } else {
+        element.style.height = 'auto';
         element.style.height = element.scrollHeight + 'px';
     }
 };
