@@ -18,7 +18,7 @@ Check out the live demo [here](https://geminihzhui.vercel.app/).
 
 ## Screenshot
 
-![](./img/ss.jpg)
+![](./img/ss.gif)
 
 ## Installation and Usage
 
