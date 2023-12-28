@@ -85,9 +85,7 @@ function sanitizeExceptCodeBlocks(markdown) {
   return result;
 }
 function sanitizeHTML(str) {
-  const temp = document.createElement('div');
-  temp.textContent = str;
-  return temp.innerHTML;
+  return new DOMParser().parseFromString(str, 'text/html').body.textContent || "";
 }
 
 const renderChat = () => {
