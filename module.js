@@ -72,7 +72,10 @@ async function restartChatWithUpdatedHistory() {
     }
 }
 
-marked.setOptions({sanitizer: null});
+marked.setOptions({
+  sanitizer: (html) => {
+  }
+});
 
 function sanitizeHTML(str) {
   const temp = document.createElement('div');
