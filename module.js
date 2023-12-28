@@ -72,22 +72,7 @@ async function restartChatWithUpdatedHistory() {
     }
 }
 
-marked.setOptions({
-  //renderer: new marked.Renderer(),
-  //highlight: function(code, lang) {
-    // Optionally, you can use a library like highlight.js for syntax highlighting
-    //const highlightjs = require('highlight.js');
-    //const language = highlightjs.getLanguage(lang) ? lang : 'plaintext';
-    //return highlightjs.highlight(code, { language }).value;
-  //},
-  //pedantic: false,
-  //gfm: true, // Enables GitHub Flavored Markdown
-  //breaks: false, // Whether to add <br> on a single line break (helps with GitHub Flavored Markdown)
-  sanitize: false, // Do not sanitize the output, rely on the server side for this
-  //smartLists: true,
-  //smartypants: false,
-  //xhtml: false
-});
+marked.setOptions({sanitize: false,});
 
 function sanitizeHTML(str) {
   const temp = document.createElement('div');
