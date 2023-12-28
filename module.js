@@ -72,6 +72,24 @@ async function restartChatWithUpdatedHistory() {
     }
 }
 
+function sanitizeExceptCodeBlocks(markdown) {
+  const regex = /(^```[\s\S]*?```$)|(`.*?`)/gm;
+  let lastIndex = 0;
+  let result = '';
+  markdown.replace(regex, (match, codeBlock, inlineCode, index) => {
+    result += sanitizeHTML(markdown.slice(lastIndex, index));
+    result += codeBlock || inlineCode;
+    lastIndex = index + match.length;
+  });
+  result += sanitizeHTML(markdown.slice(lastIndex));
+  return result;
+}
+function sanitizeHTML(str) {
+  const temp = document.createElement('div');
+  temp.textContent = str;
+  return temp.innerHTML;
+}
+
 const renderChat = () => {
   chatElement.innerHTML = '';
   chatHistory.forEach(({ role, parts }, index) => {
@@ -80,7 +98,7 @@ const renderChat = () => {
     
     const message = document.createElement('div');
     message.classList.add('message', role);
-    message.innerHTML = renderMarkdownAndMath(parts);
+    message.innerHTML = renderMarkdownAndMath(sanitizeExceptCodeBlocks(parts));
     messageContainer.appendChild(message);
 
     const buttonGroup = document.createElement('div');
@@ -114,9 +132,35 @@ const loadApiKeyFromLocalStorage = () => {
 document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
 
 const renderMarkdownAndMath = (text) => {
-  let html = marked.parse(text);
-  html = html.replace(/\$\$[^\$]*\$\$/g, (match) => {
-    const math = match.slice(2, -2);
+  let markdownHtml = marked.parse(text);
+
+  const extractCodeBlocks = (html) => {
+    const codeBlockRegex = /<pre><code>[\s\S]*?<\/code><\/pre>/g;
+    const inlineCodeRegex = /<code>[\s\S]*?<\/code>/g;
+
+    const replacer = (match) => {
+      const index = codeBlocks.length;
+      codeBlocks.push(match);
+      return `[code-block-placeholder-${index}]`;
+    };
+
+    let codeBlocks = [];
+    html = html.replace(codeBlockRegex, replacer).replace(inlineCodeRegex, replacer);
+    
+    return { html, codeBlocks };
+  };
+
+  const restoreCodeBlocks = (html, blocks) => {
+    return html.replace(/\[code-block-placeholder-\d+\]/g, (match) => {
+      const index = parseInt(match.match(/\d+/)[0], 10);
+      return blocks[index];
+    });
+  };
+
+  let { html: noCodeHtml, codeBlocks } = extractCodeBlocks(markdownHtml);
+  
+  noCodeHtml = noCodeHtml.replace(/(?<!\\)\$\$[\s\S]+?\$\$/g, (match) => {
+    const math = match.slice(2, -2).trim();
     try {
       return katex.renderToString(math, { displayMode: true });
     } catch (error) {
@@ -125,8 +169,8 @@ const renderMarkdownAndMath = (text) => {
     }
   });
 
-  html = html.replace(/\$[^\$]*\$/g, (match) => {
-    const math = match.slice(1, -1);
+  noCodeHtml = noCodeHtml.replace(/(?<!\\)\$[^$]+?\$/g, (match) => {
+    const math = match.slice(1, -1).trim();
     try {
       return katex.renderToString(math, { displayMode: false });
     } catch (error) {
@@ -134,8 +178,8 @@ const renderMarkdownAndMath = (text) => {
       return match;
     }
   });
-  html = DOMPurify.sanitize(html);
-  return html;
+  markdownHtml = restoreCodeBlocks(noCodeHtml, codeBlocks);
+  return markdownHtml;
 };
     
 const toggleLoading = (isLoading) => {
@@ -219,4 +263,3 @@ const adjustTextareaHeight = (element) => {
 };
 
 userInput.addEventListener('input', () => adjustTextareaHeight(userInput));
-console.log(DOMPurify.sanitize('<img src=x onerror=alert(1)>')); // Should output "<img src="x">"
