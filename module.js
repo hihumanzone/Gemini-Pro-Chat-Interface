@@ -72,13 +72,7 @@ async function restartChatWithUpdatedHistory() {
     }
 }
 
-marked.setOptions({sanitize: false});
-
-function sanitizeHTML(str) {
-  const temp = document.createElement('div');
-  temp.textContent = str;
-  return temp.innerHTML;
-}
+marked.setOptions({sanitize: true});
 
 const renderChat = () => {
   chatElement.innerHTML = '';
@@ -88,7 +82,7 @@ const renderChat = () => {
     
     const message = document.createElement('div');
     message.classList.add('message', role);
-    message.innerHTML = renderMarkdownAndMath(sanitizeHTML(parts));
+    message.innerHTML = renderMarkdownAndMath(parts);
     messageContainer.appendChild(message);
 
     const buttonGroup = document.createElement('div');
