@@ -85,6 +85,11 @@ function sanitizeExceptCodeBlocks(markdown) {
   return result;
 }
 function sanitizeHTML(str) {
+  const temp = document.createElement('div');
+  temp.textContent = str;
+  return temp.innerHTML;
+}
+function unsanitizeHTML(str) {
   return new DOMParser().parseFromString(str, 'text/html').body.textContent || "";
 }
 
@@ -96,7 +101,7 @@ const renderChat = () => {
     
     const message = document.createElement('div');
     message.classList.add('message', role);
-    message.innerHTML = renderMarkdownAndMath(sanitizeExceptCodeBlocks(parts));
+    message.innerHTML = renderMarkdownAndMath(sanitizeHTML(unsanitizeHTML(parts)));
     messageContainer.appendChild(message);
 
     const buttonGroup = document.createElement('div');
