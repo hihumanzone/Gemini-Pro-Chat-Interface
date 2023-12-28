@@ -72,11 +72,18 @@ async function restartChatWithUpdatedHistory() {
     }
 }
 
-marked.setOptions({
-  sanitizer: (html) => {
-  }
-});
-
+function sanitizeExceptCodeBlocks(markdown) {
+  const regex = /(^```[\s\S]*?```$)|(`.*?`)/gm;
+  let lastIndex = 0;
+  let result = '';
+  markdown.replace(regex, (match, codeBlock, inlineCode, index) => {
+    result += sanitizeHTML(markdown.slice(lastIndex, index));
+    result += codeBlock || inlineCode;
+    lastIndex = index + match.length;
+  });
+  result += sanitizeHTML(markdown.slice(lastIndex));
+  return result;
+}
 function sanitizeHTML(str) {
   const temp = document.createElement('div');
   temp.textContent = str;
@@ -91,7 +98,7 @@ const renderChat = () => {
     
     const message = document.createElement('div');
     message.classList.add('message', role);
-    message.innerHTML = renderMarkdownAndMath(sanitizeHTML(parts));
+    message.innerHTML = renderMarkdownAndMath(sanitizeExceptCodeBlocks(parts));
     messageContainer.appendChild(message);
 
     const buttonGroup = document.createElement('div');
