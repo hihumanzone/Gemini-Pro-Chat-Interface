@@ -89,9 +89,6 @@ function sanitizeHTML(str) {
   temp.textContent = str;
   return temp.innerHTML;
 }
-function unsanitizeHTML(str) {
-  return new DOMParser().parseFromString(str, 'text/html').body.textContent || "";
-}
 
 const renderChat = () => {
   chatElement.innerHTML = '';
@@ -101,7 +98,7 @@ const renderChat = () => {
     
     const message = document.createElement('div');
     message.classList.add('message', role);
-    message.innerHTML = renderMarkdownAndMath(sanitizeHTML(unsanitizeHTML(parts)));
+    message.innerHTML = renderMarkdownAndMath(sanitizeExceptCodeBlocks(parts));
     messageContainer.appendChild(message);
 
     const buttonGroup = document.createElement('div');
