@@ -131,56 +131,43 @@ const loadApiKeyFromLocalStorage = () => {
 
 document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
 
+const markAndExtractCodeBlocks = (html) => {
+  const codeBlockRegex = /<(pre><code>|code)>[\s\S]*?<\/(code|pre)>/g;
+  let codeBlocks = [];
+  const newHtml = html.replace(codeBlockRegex, (match) => `[code-block-${codeBlocks.push(match) - 1}]`);
+  return { newHtml, codeBlocks };
+};
+
+const restoreCodeBlocks = (html, blocks) => {
+  return html.replace(/\[code-block-(\d+)\]/g, (match, index) => blocks[parseInt(index, 10)]);
+};
+
+const replaceMathWithRendered = (html, regex, displayMode) => {
+  return html.replace(regex, (match) => {
+    const math = match.replace(/^\$(\$?)/, '').replace(/(\$?)\$$/, '').trim();
+    try {
+      return katex.renderToString(math, { displayMode });
+    } catch (error) {
+      console.error('KaTeX rendering error:', error);
+      return match;
+    }
+  });
+};
+
 const renderMarkdownAndMath = (text) => {
   let markdownHtml = marked.parse(text);
+ 
+  const { newHtml: htmlWithoutCode, codeBlocks } = markAndExtractCodeBlocks(markdownHtml);
 
-  const extractCodeBlocks = (html) => {
-    const codeBlockRegex = /<pre><code>[\s\S]*?<\/code><\/pre>/g;
-    const inlineCodeRegex = /<code>[\s\S]*?<\/code>/g;
+  let htmlWithRenderedMath = replaceMathWithRendered(htmlWithoutCode, /(?<!\\)\$\$[\s\S]+?\$\$/g, true);
 
-    const replacer = (match) => {
-      const index = codeBlocks.length;
-      codeBlocks.push(match);
-      return `[code-block-placeholder-${index}]`;
-    };
+  htmlWithRenderedMath = replaceMathWithRendered(htmlWithRenderedMath, /(?<!\\)\$[^$]+?\$/g, false);
 
-    let codeBlocks = [];
-    html = html.replace(codeBlockRegex, replacer).replace(inlineCodeRegex, replacer);
-    
-    return { html, codeBlocks };
-  };
+  markdownHtml = restoreCodeBlocks(htmlWithRenderedMath, codeBlocks);
 
-  const restoreCodeBlocks = (html, blocks) => {
-    return html.replace(/\[code-block-placeholder-\d+\]/g, (match) => {
-      const index = parseInt(match.match(/\d+/)[0], 10);
-      return blocks[index];
-    });
-  };
-
-  let { html: noCodeHtml, codeBlocks } = extractCodeBlocks(markdownHtml);
-  
-  noCodeHtml = noCodeHtml.replace(/(?<!\\)\$\$[\s\S]+?\$\$/g, (match) => {
-    const math = match.slice(2, -2).trim();
-    try {
-      return katex.renderToString(math, { displayMode: true });
-    } catch (error) {
-      console.error('KaTeX rendering error:', error);
-      return match;
-    }
-  });
-
-  noCodeHtml = noCodeHtml.replace(/(?<!\\)\$[^$]+?\$/g, (match) => {
-    const math = match.slice(1, -1).trim();
-    try {
-      return katex.renderToString(math, { displayMode: false });
-    } catch (error) {
-      console.error('KaTeX rendering error:', error);
-      return match;
-    }
-  });
-  markdownHtml = restoreCodeBlocks(noCodeHtml, codeBlocks);
   return markdownHtml;
 };
+
     
 const toggleLoading = (isLoading) => {
     loadingIndicator.style.display = isLoading ? 'flex' : 'none';
