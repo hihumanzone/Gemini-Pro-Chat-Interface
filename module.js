@@ -115,7 +115,6 @@ document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
 
 const renderMarkdownAndMath = (text) => {
     let html = marked.parse(text);
-    html = DOMPurify.sanitize(html);
     html = html.replace(/\$\$[^\$]*\$\$/g, (match) => {
       const math = match.slice(2, -2);
       try {
@@ -135,7 +134,7 @@ const renderMarkdownAndMath = (text) => {
         return match;
       }
     });
-
+    html = DOMPurify.sanitize(html);
     return html;
   };
     
