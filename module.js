@@ -83,11 +83,17 @@ marked.setOptions({
   //pedantic: false,
   //gfm: true, // Enables GitHub Flavored Markdown
   //breaks: false, // Whether to add <br> on a single line break (helps with GitHub Flavored Markdown)
-  sanitize: true, // Do not sanitize the output, rely on the server side for this
+  sanitize: false, // Do not sanitize the output, rely on the server side for this
   //smartLists: true,
   //smartypants: false,
   //xhtml: false
 });
+
+function sanitizeHTML(str) {
+  const temp = document.createElement('div');
+  temp.textContent = str;
+  return temp.innerHTML;
+}
 
 const renderChat = () => {
   chatElement.innerHTML = '';
@@ -97,7 +103,7 @@ const renderChat = () => {
     
     const message = document.createElement('div');
     message.classList.add('message', role);
-    message.innerHTML = renderMarkdownAndMath(parts);
+    message.innerHTML = renderMarkdownAndMath(sanitizeHTML(parts));
     messageContainer.appendChild(message);
 
     const buttonGroup = document.createElement('div');
