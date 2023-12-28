@@ -72,23 +72,22 @@ async function restartChatWithUpdatedHistory() {
     }
 }
 
-function sanitizeExceptCodeBlocks(markdown) {
-  const regex = /(^```[\s\S]*?```$)|(`.*?`)/gm;
-  let lastIndex = 0;
-  let result = '';
-  markdown.replace(regex, (match, codeBlock, inlineCode, index) => {
-    result += sanitizeHTML(markdown.slice(lastIndex, index));
-    result += codeBlock || inlineCode;
-    lastIndex = index + match.length;
-  });
-  result += sanitizeHTML(markdown.slice(lastIndex));
-  return result;
-}
-function sanitizeHTML(str) {
-  const temp = document.createElement('div');
-  temp.textContent = str;
-  return temp.innerHTML;
-}
+marked.setOptions({
+  //renderer: new marked.Renderer(),
+  //highlight: function(code, lang) {
+    // Optionally, you can use a library like highlight.js for syntax highlighting
+    //const highlightjs = require('highlight.js');
+    //const language = highlightjs.getLanguage(lang) ? lang : 'plaintext';
+    //return highlightjs.highlight(code, { language }).value;
+  //},
+  //pedantic: false,
+  //gfm: true, // Enables GitHub Flavored Markdown
+  //breaks: false, // Whether to add <br> on a single line break (helps with GitHub Flavored Markdown)
+  sanitize: true, // Do not sanitize the output, rely on the server side for this
+  //smartLists: true,
+  //smartypants: false,
+  //xhtml: false
+});
 
 const renderChat = () => {
   chatElement.innerHTML = '';
@@ -98,7 +97,7 @@ const renderChat = () => {
     
     const message = document.createElement('div');
     message.classList.add('message', role);
-    message.innerHTML = renderMarkdownAndMath(sanitizeExceptCodeBlocks(parts));
+    message.innerHTML = renderMarkdownAndMath(parts);
     messageContainer.appendChild(message);
 
     const buttonGroup = document.createElement('div');
