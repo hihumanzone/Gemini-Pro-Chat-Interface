@@ -113,6 +113,12 @@ const loadApiKeyFromLocalStorage = () => {
 
 document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
 
+const clean = DOMPurify.sanitize(dirty, {
+  ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a'],
+  ALLOWED_ATTR: ['href', 'target'],
+  ADD_ATTR: ['rel'],
+});
+
 const renderMarkdownAndMath = (text) => {
     let html = marked.parse(text);
     html = html.replace(/\$\$[^\$]*\$\$/g, (match) => {
@@ -138,9 +144,9 @@ const renderMarkdownAndMath = (text) => {
     return html;
   };
     
-    const toggleLoading = (isLoading) => {
-      loadingIndicator.style.display = isLoading ? 'flex' : 'none';
-    };
+const toggleLoading = (isLoading) => {
+    loadingIndicator.style.display = isLoading ? 'flex' : 'none';
+};
     
 const initializeChat = async () => {
     if (apiKeyInput.value) {
@@ -219,3 +225,4 @@ const adjustTextareaHeight = (element) => {
 };
 
 userInput.addEventListener('input', () => adjustTextareaHeight(userInput));
+console.log(DOMPurify.sanitize('<img src=x onerror=alert(1)>')); // Should output "<img src="x">"
