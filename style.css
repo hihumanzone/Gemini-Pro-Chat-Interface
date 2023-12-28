@@ -7,7 +7,7 @@ body {
   display: flex;
   flex-direction: column;
 }
-h1 {
+#heading {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 1.5rem;
   font-weight: normal;
