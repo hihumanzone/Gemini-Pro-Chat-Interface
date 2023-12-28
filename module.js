@@ -113,36 +113,30 @@ const loadApiKeyFromLocalStorage = () => {
 
 document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
 
-const clean = DOMPurify.sanitize(dirty, {
-  ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a'],
-  ALLOWED_ATTR: ['href', 'target'],
-  ADD_ATTR: ['rel'],
-});
-
 const renderMarkdownAndMath = (text) => {
-    let html = marked.parse(text);
-    html = html.replace(/\$\$[^\$]*\$\$/g, (match) => {
-      const math = match.slice(2, -2);
-      try {
-        return katex.renderToString(math, { displayMode: true });
-      } catch (error) {
-        console.error('KaTeX rendering error:', error);
-        return match;
-      }
-    });
+  let html = marked.parse(text);
+  html = html.replace(/\$\$[^\$]*\$\$/g, (match) => {
+    const math = match.slice(2, -2);
+    try {
+      return katex.renderToString(math, { displayMode: true });
+    } catch (error) {
+      console.error('KaTeX rendering error:', error);
+      return match;
+    }
+  });
 
-    html = html.replace(/\$[^\$]*\$/g, (match) => {
-      const math = match.slice(1, -1);
-      try {
-        return katex.renderToString(math, { displayMode: false });
-      } catch (error) {
-        console.error('KaTeX rendering error:', error);
-        return match;
-      }
-    });
-    html = DOMPurify.sanitize(html);
-    return html;
-  };
+  html = html.replace(/\$[^\$]*\$/g, (match) => {
+    const math = match.slice(1, -1);
+    try {
+      return katex.renderToString(math, { displayMode: false });
+    } catch (error) {
+      console.error('KaTeX rendering error:', error);
+      return match;
+    }
+  });
+  html = DOMPurify.sanitize(html);
+  return html;
+};
     
 const toggleLoading = (isLoading) => {
     loadingIndicator.style.display = isLoading ? 'flex' : 'none';
