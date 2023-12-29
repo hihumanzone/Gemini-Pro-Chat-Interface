@@ -331,7 +331,7 @@ const sendMessageStream = async () => {
     console.error(error);
     chatHistory.push({ role: 'model', parts: `Error: ${error.message}` });
     toggleLoading(false);
-    setButtonDisabledState(sendButton, true);
+    setButtonDisabledState(sendButton, false);
     renderChat();
   }
 };
