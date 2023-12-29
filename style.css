@@ -125,7 +125,7 @@ input, button#send, button#clear, #userInput, button#toggle-manage {
     pre code {
       display: block;
       padding: 10px;
-      margin: 0 0 10px;
+      margin: 0 0 4px;
       overflow: auto;
       font-family: monospace;
       font-size: 0.9em;
