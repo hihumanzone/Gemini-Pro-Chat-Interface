@@ -260,6 +260,10 @@ const updateImageCounter = () => {
 };
 imageInput.addEventListener('change', updateImageCounter);
 
+const setButtonDisabledState = (button, isDisabled) => {
+    button.disabled = isDisabled;
+};
+
 const sendMessageStream = async () => {
   if (!chat || !apiKeyInput.value) {
     alert('You must provide an API key and initialize the chat before sending messages.');
@@ -301,6 +305,7 @@ const sendMessageStream = async () => {
   updateImageCounter();
   adjustTextareaHeight(userInput);
   toggleLoading(true);
+  setButtonDisabledState(sendButton, true);
 
   try {
     let result;
@@ -326,6 +331,7 @@ const sendMessageStream = async () => {
     console.error(error);
     chatHistory.push({ role: 'model', parts: `Error: ${error.message}` });
     toggleLoading(false);
+    setButtonDisabledState(sendButton, true);
     renderChat();
   }
 };
