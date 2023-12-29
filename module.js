@@ -248,12 +248,6 @@ const sendMessageStream = async () => {
   updateImageCounter();
 
   const model = await createGenerativeModel(useVisionModel);
-  chat = await model.startChat({
-    history: chatHistory,
-    generationConfig: {
-      maxOutputTokens: 16384,
-    },
-  });
   if (msg === '') return;
 
   chatHistory.push({ role: 'user', parts: msg });
