@@ -25,12 +25,15 @@
   </header>
   <div id="chat-container">
     <div id="chat"></div>
-    <div id="send-container">
-      <button id="toggle-manage" title="Toggle settings">&#9881;</button>
-      <textarea id="userInput" placeholder="Type your message here..."></textarea>
-      <button id="send">Send</button>
-      <span id="loading"> Generating... </span>
-    </div>
+<div id="image-preview-container" class="hidden"></div>
+<div id="send-container">
+  <button id="toggle-manage" title="Toggle settings">&#9881;</button>
+  <textarea id="userInput" placeholder="Type your message here..."></textarea>
+  <input type="file" id="imageInput" accept="image/*" style="display: none;" multiple>
+  <label for="imageInput" id="uploadImageBtn" title="Upload Image">&#128247; <span id="imageCounter" class="image-counter">0</span></label>
+  <button id="send">Send</button>
+  <span id="loading"> Generating... </span>
+</div>
     <div id="manage-container" class="hidden">
       <button id="clear">Clear History</button>
       <input type="password" id="apiKeyInput" placeholder="Enter your API key">
