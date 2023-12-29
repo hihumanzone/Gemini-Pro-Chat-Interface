@@ -79,8 +79,8 @@ body {
 .message-container.model {
   align-items: flex-start;
 }
-button.copy-msg-btn,
-button.delete-msg-btn {
+.copy-msg-btn,
+.delete-msg-btn {
   color: #fff;
   padding: 5px 10px;
   background-color: #151515;
@@ -88,7 +88,7 @@ button.delete-msg-btn {
   font-size: 0.8em;
   border: 1px solid #212128;
 }
-input, button#send, button#clear, #userInput, button#toggle-manage {
+input, #send, #clear, #userInput, #toggle-manage, #uploadImageBtn {
   color: #fff;
   background: #151515;
   padding: 10px;
@@ -113,7 +113,8 @@ input, button#send, button#clear, #userInput, button#toggle-manage {
   width: 80px;
   display: inline-block;
 }
-#toggle-manage {
+#toggle-manage,
+#uploadImageBtn {
   width: 40px;
   display: inline-block;
 }
@@ -121,6 +122,18 @@ input, button#send, button#clear, #userInput, button#toggle-manage {
   display: none;
   margin-left: 10px;
   align-self: center;
+}
+#image-preview-container {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  overflow-x: auto;
+  padding: 5px;
+}
+#image-preview-container img {
+  max-height: 100px;
+  border-radius: 5px;
+  object-fit: cover;
 }
     pre code {
       display: block;
