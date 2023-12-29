@@ -172,45 +172,39 @@ const loadApiKeyFromLocalStorage = () => {
 document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
 
 const markAndExtractCodeBlocks = (html) => {
-  const codeBlockRegex = /<(pre><code>|code)>[\s\S]*?<\/(code|pre)>/g;
+  const codeBlockRegex = /<pre><code>[\s\S]*?<\/code><\/pre>|<code>[\s\S]*?<\/code>/g;
   let codeBlocks = [];
-  const newHtml = html.replace(codeBlockRegex, (match) => `[code-block-${codeBlocks.push(match) - 1}]`);
+  const newHtml = html.replace(codeBlockRegex, match => `[code-block-${codeBlocks.push(match) - 1}]`);
   return { newHtml, codeBlocks };
 };
 
-const restoreCodeBlocks = (html, blocks) => {
-  return html.replace(/\[code-block-(\d+)\]/g, (match, index) => blocks[parseInt(index, 10)]);
-};
+const restoreCodeBlocks = (html, blocks) => 
+  html.replace(/\[code-block-(\d+)\]/g, (match, index) => blocks[parseInt(index, 10)]);
 
-const replaceMathWithRendered = (html, regex, displayMode) => {
-  return html.replace(regex, (match) => {
-    const math = match.replace(/^\$(\$?)/, '').replace(/(\$?)\$$/, '').trim();
+const replaceMathWithRendered = (html, regex, displayMode) => 
+  html.replace(regex, match => {
+    const math = match.slice(1, -1).trim();
     try {
       return katex.renderToString(math, { displayMode });
-    } catch (error) {
-      console.error('KaTeX rendering error:', error);
+    } catch {
       return match;
     }
   });
-};
 
 const renderMarkdownAndMath = (text) => {
   let markdownHtml = marked.parse(text);
- 
-  const { newHtml: htmlWithoutCode, codeBlocks } = markAndExtractCodeBlocks(markdownHtml);
-
-  let htmlWithRenderedMath = replaceMathWithRendered(htmlWithoutCode, /(?<!\\)\$\$[\s\S]+?\$\$/g, true);
-
-  htmlWithRenderedMath = replaceMathWithRendered(htmlWithRenderedMath, /(?<!\\)\$[^$]+?\$/g, false);
-
-  markdownHtml = restoreCodeBlocks(htmlWithRenderedMath, codeBlocks);
-
-  return markdownHtml;
+  
+  let { newHtml, codeBlocks } = markAndExtractCodeBlocks(markdownHtml);
+  
+  newHtml = replaceMathWithRendered(newHtml, /(?<!\\)\$\$[\s\S]+?\$\$/g, true);
+  newHtml = replaceMathWithRendered(newHtml, /(?<!\\)\$[^$]+?\$/g, false);
+  
+  return restoreCodeBlocks(newHtml, codeBlocks);
 };
-
     
 const toggleLoading = (isLoading) => {
     loadingIndicator.style.display = isLoading ? 'flex' : 'none';
+    sendButton.disabled = isLoading;
 };
     
 const initializeChat = async () => {
@@ -260,10 +254,6 @@ const updateImageCounter = () => {
 };
 imageInput.addEventListener('change', updateImageCounter);
 
-const setButtonDisabledState = (button, isDisabled) => {
-    button.disabled = isDisabled;
-};
-
 const sendMessageStream = async () => {
   if (!chat || !apiKeyInput.value) {
     alert('You must provide an API key and initialize the chat before sending messages.');
@@ -305,7 +295,6 @@ const sendMessageStream = async () => {
   updateImageCounter();
   adjustTextareaHeight(userInput);
   toggleLoading(true);
-  setButtonDisabledState(sendButton, true);
 
   try {
     let result;
@@ -331,7 +320,6 @@ const sendMessageStream = async () => {
     console.error(error);
     chatHistory.push({ role: 'model', parts: `Error: ${error.message}` });
     toggleLoading(false);
-    setButtonDisabledState(sendButton, false);
     renderChat();
   }
 };
