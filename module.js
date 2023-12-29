@@ -117,13 +117,15 @@ function sanitizeHTML(str) {
 
 const renderChat = () => {
   chatElement.innerHTML = '';
-  chatHistory.forEach(({ role, parts }, index) => {
-    const messageContainer = document.createElement('div');
-    messageContainer.classList.add('message-container', role);
-    
-    const message = document.createElement('div');
-    message.classList.add('message', role);
-    message.innerHTML = renderMarkdownAndMath(sanitizeExceptCodeBlocks(parts));
+  chatHistory.forEach(({ role, parts, imageAttached }, index) => {
+  const messageContainer = document.createElement('div');
+  messageContainer.classList.add('message-container', role);
+
+  const message = document.createElement('div');
+  message.classList.add('message', role);
+
+  const attachmentIndicator = imageAttached ? ' 📸' : '';
+  message.innerHTML = renderMarkdownAndMath(sanitizeExceptCodeBlocks(parts)) + attachmentIndicator;
     messageContainer.appendChild(message);
 
     const buttonGroup = document.createElement('div');
@@ -203,6 +205,7 @@ const initializeChat = async () => {
         chatHistory = [];
         userInput.value = '';
         imageInput.value = '';
+        updateImageCounter();
         const genAI = new GoogleGenerativeAI(apiKeyInput.value);
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
         chat = await model.startChat({
@@ -220,10 +223,27 @@ const initializeChat = async () => {
 apiKeyInput.addEventListener('change', saveApiKeyToLocalStorage);
 apiKeyInput.addEventListener('change', initializeChat);
 
+const displayImagePreviews = (files) => {
+  const imagePreviewContainer = document.getElementById('image-preview-container');
+  imagePreviewContainer.innerHTML = '';
+  if (files.length > 0) {
+    Array.from(files).forEach((file) => {
+      const imgElement = document.createElement('img');
+      imgElement.src = URL.createObjectURL(file);
+      imgElement.onload = () => URL.revokeObjectURL(imgElement.src);
+      imagePreviewContainer.appendChild(imgElement);
+    });
+    imagePreviewContainer.classList.remove('hidden');
+  } else {
+    imagePreviewContainer.classList.add('hidden');
+  }
+};
+
 const updateImageCounter = () => {
   const imageCounterElement = document.getElementById('imageCounter');
   const fileCount = imageInput.files ? imageInput.files.length : 0;
   imageCounterElement.textContent = fileCount;
+  displayImagePreviews(imageInput.files);
 };
 imageInput.addEventListener('change', updateImageCounter);
 
@@ -248,9 +268,19 @@ const sendMessageStream = async () => {
   updateImageCounter();
 
   const model = await createGenerativeModel(useVisionModel);
+  chat = await model.startChat({
+    history: chatHistory,
+    generationConfig: {
+      maxOutputTokens: 16384,
+    },
+  });
   if (msg === '') return;
 
-  chatHistory.push({ role: 'user', parts: msg });
+  chatHistory.push({
+  role: 'user',
+  parts: msg,
+  imageAttached: useVisionModel
+  });
   renderChat();
   userInput.value = '';
   imageInput.value = '';
