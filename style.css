@@ -165,3 +165,6 @@ input, button#send, button#clear, #userInput, button#toggle-manage {
 .hidden {
     display: none!important;
 }
+.katex-display {
+  overflow-x: auto;
+}
