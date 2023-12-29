@@ -9,6 +9,31 @@ const apiKeyInput = document.getElementById('apiKeyInput');
 const sendButton = document.getElementById('send');
 const clearButton = document.getElementById('clear');
 const loadingIndicator = document.getElementById('loading');
+const imageInput = document.getElementById('imageInput');
+const uploadImageBtn = document.getElementById('uploadImageBtn');
+
+async function fileToGenerativePart(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      resolve({
+        inlineData: {
+          data: reader.result.split(',')[1],
+          mimeType: file.type,
+        },
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function createGenerativeModel(useVisionModel = false) {
+  const genAI = new GoogleGenerativeAI(apiKeyInput.value);
+  return genAI.getGenerativeModel({
+    model: useVisionModel ? "gemini-pro-vision" : "gemini-pro"
+  });
+}
+
 
 function addCopyButton(container, text) {
   let copyButton = document.createElement('button');
@@ -176,6 +201,8 @@ const toggleLoading = (isLoading) => {
 const initializeChat = async () => {
     if (apiKeyInput.value) {
         chatHistory = [];
+        userInput.value = '';
+        imageInput.value = '';
         const genAI = new GoogleGenerativeAI(apiKeyInput.value);
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
         chat = await model.startChat({
@@ -193,6 +220,13 @@ const initializeChat = async () => {
 apiKeyInput.addEventListener('change', saveApiKeyToLocalStorage);
 apiKeyInput.addEventListener('change', initializeChat);
 
+const updateImageCounter = () => {
+  const imageCounterElement = document.getElementById('imageCounter');
+  const fileCount = imageInput.files ? imageInput.files.length : 0;
+  imageCounterElement.textContent = fileCount;
+};
+imageInput.addEventListener('change', updateImageCounter);
+
 const sendMessageStream = async () => {
   if (!chat || !apiKeyInput.value) {
     alert('You must provide an API key and initialize the chat before sending messages.');
@@ -200,16 +234,43 @@ const sendMessageStream = async () => {
   }
 
   const msg = userInput.value.trim();
+  const files = imageInput.files;
+
+  let inputParts = [{ text: msg }];
+  let useVisionModel = false;
+
+  if (files && files.length > 0) {
+    const imagePartsPromises = Array.from(files).map(fileToGenerativePart);
+    const imageParts = await Promise.all(imagePartsPromises);
+    inputParts = inputParts.concat(imageParts);
+    useVisionModel = true;
+  }
+  updateImageCounter();
+
+  const model = await createGenerativeModel(useVisionModel);
+  chat = await model.startChat({
+    history: chatHistory,
+    generationConfig: {
+      maxOutputTokens: 16384,
+    },
+  });
   if (msg === '') return;
 
   chatHistory.push({ role: 'user', parts: msg });
   renderChat();
   userInput.value = '';
+  imageInput.value = '';
+  updateImageCounter();
   adjustTextareaHeight(userInput);
   toggleLoading(true);
 
   try {
-    const result = await chat.sendMessageStream(msg);
+    let result;
+    if (useVisionModel) {
+      result = await model.generateContentStream(inputParts);
+    } else {
+      result = await chat.sendMessageStream(inputParts);
+    }
     let modelResponseIndex = chatHistory.length;
 
     for await (const responseChunk of result.stream) {
@@ -225,7 +286,7 @@ const sendMessageStream = async () => {
     toggleLoading(false);
   } catch (error) {
     console.error(error);
-    chatHistory.push({ role: 'model', parts: error.message });
+    chatHistory.push({ role: 'model', parts: `Error: ${error.message}` });
     toggleLoading(false);
     renderChat();
   }
