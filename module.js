@@ -205,6 +205,7 @@ const renderMarkdownAndMath = (text) => {
 const toggleLoading = (isLoading) => {
     loadingIndicator.style.display = isLoading ? 'flex' : 'none';
     sendButton.disabled = isLoading;
+    clearButton.disabled = isLoading;
 };
     
 const initializeChat = async () => {
