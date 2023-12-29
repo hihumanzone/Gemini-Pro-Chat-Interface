@@ -117,7 +117,7 @@ function sanitizeHTML(str) {
 
 const renderChat = () => {
   chatElement.innerHTML = '';
-  chatHistory.forEach(({ role, parts, imageAttached }, index) => {
+  chatHistory.forEach(({ role, parts, imageAttached, images }, index) => {
   const messageContainer = document.createElement('div');
   messageContainer.classList.add('message-container', role);
 
@@ -126,6 +126,19 @@ const renderChat = () => {
 
   const attachmentIndicator = imageAttached ? ' 📸' : '';
   message.innerHTML = renderMarkdownAndMath(sanitizeExceptCodeBlocks(parts)) + attachmentIndicator;
+  if (imageAttached && images.length > 0) {
+      const imagePreviewContainer = document.createElement('div');
+      imagePreviewContainer.classList.add('image-preview-container');
+      
+      images.forEach((imageUrl) => {
+        const imgElement = document.createElement('img');
+        imgElement.src = imageUrl;
+        imgElement.classList.add('image-preview');
+        imagePreviewContainer.appendChild(imgElement);
+      });
+
+      messageContainer.appendChild(imagePreviewContainer);
+    }
     messageContainer.appendChild(message);
 
     const buttonGroup = document.createElement('div');
@@ -279,7 +292,8 @@ const sendMessageStream = async () => {
   chatHistory.push({
   role: 'user',
   parts: msg,
-  imageAttached: useVisionModel
+  imageAttached: useVisionModel,
+  images: useVisionModel ? Array.from(files).map(file => URL.createObjectURL(file)) : [],
   });
   renderChat();
   userInput.value = '';
