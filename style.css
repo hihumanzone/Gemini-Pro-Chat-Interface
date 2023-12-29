@@ -130,6 +130,20 @@ input, #send, #clear, #userInput, #toggle-manage, #uploadImageBtn {
   overflow-x: auto;
   padding: 5px;
 }
+.image-preview-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.image-preview {
+  max-width: 80px;
+  max-height: 80px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
 #image-preview-container img {
   max-height: 100px;
   border-radius: 5px;
