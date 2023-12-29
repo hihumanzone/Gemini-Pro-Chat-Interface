@@ -63,7 +63,7 @@ body {
   border-radius: 4px;
   background-color: #1f1f1f;
   display: inline-block;
-  box-shadow: 0 2px 30px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 30px rgba(255, 255, 255, 0.15);
 }
 .message.user {
   background-color: #0e292e;
@@ -134,14 +134,19 @@ input, #send, #clear, #userInput, #toggle-manage, #uploadImageBtn {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
-  margin-top: 5px;
+  margin: 0 0 5px 5px;
+  padding: 5px;
+  border: 10px solid #222222;
+  border-radius: 10px;
+  box-shadow: 0 2px 30px rgba(255, 255, 255, 0.2);
 }
 
 .image-preview {
-  max-width: 80px;
-  max-height: 80px;
+  max-width: 100px;
+  max-height: 100px;
   border-radius: 4px;
   object-fit: cover;
+  border: 2px solid #111;
 }
 
 #image-preview-container img {
