@@ -168,3 +168,9 @@ input, button#send, button#clear, #userInput, button#toggle-manage {
 .katex-display {
   overflow-x: auto;
 }
+.katex-display,
+.katex {
+  margin: 0; /* Adjust margin as needed */
+  padding: 0; /* Adjust padding as needed */
+  display: inline-block; /* or other appropriate display property */
+}
