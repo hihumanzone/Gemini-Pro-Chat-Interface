@@ -81,6 +81,30 @@ function addDeleteButton(container, index) {
   container.appendChild(deleteButton);
 }
 
+async function regenerateLastModelResponse() {
+  if (chatHistory.length >= 2) {
+    const lastUserMessageIndex = chatHistory.length - 2;
+    const lastUserMessage = chatHistory[lastUserMessageIndex].parts;
+    chatHistory.splice(lastUserMessageIndex, 2);
+    await restartChatWithUpdatedHistory();
+    userInput.value = lastUserMessage;
+    await sendMessageStream();
+    userInput.value = '';
+  } else {
+    console.error('Unable to regenerate: not enough history present.');
+  }
+}
+
+function createRegenerateButton(text, index) {
+  const regenerateButton = document.createElement('button');
+  regenerateButton.textContent = 'Regenerate';
+  regenerateButton.classList.add('regenerate-msg-btn');
+  regenerateButton.onclick = function () {
+    regenerateLastModelResponse();
+  };
+  return regenerateButton;
+}
+
 async function restartChatWithUpdatedHistory() {
     if (apiKeyInput.value) {
       const genAI = new GoogleGenerativeAI(apiKeyInput.value);
@@ -177,6 +201,10 @@ const renderChat = () => {
 
     addCopyButton(buttonGroup, parts);
     addDeleteButton(buttonGroup, index);
+    if (role === 'model' && index === chatHistory.length - 1) {
+      const regenerateButton = createRegenerateButton(parts, index);
+      buttonGroup.appendChild(regenerateButton);
+    }
 
     messageContainer.appendChild(buttonGroup);
 
@@ -203,7 +231,15 @@ document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
 const toggleLoading = (isLoading) => {
     loadingIndicator.style.display = isLoading ? 'flex' : 'none';
     sendButton.disabled = isLoading;
+    const deleteButtons = document.querySelectorAll('.delete-msg-btn');
+    const regenerateButtons = document.querySelectorAll('.regenerate-msg-btn');
     clearButton.disabled = isLoading;
+    deleteButtons.forEach((button) => {
+    button.disabled = isLoading;
+    });
+    regenerateButtons.forEach((button) => {
+    button.disabled = isLoading;
+    });
 };
     
 const initializeChat = async () => {
