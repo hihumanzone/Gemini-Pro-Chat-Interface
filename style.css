@@ -197,3 +197,15 @@ input, #send, #clear, #userInput, #toggle-manage, #uploadImageBtn {
 .hidden {
     display: none!important;
 }
+a {
+  color: #C6C6C6;
+  text-decoration: none;
+  word-wrap: break-word;
+}
+a:hover, a:focus {
+  color: #EEEEEE;
+  text-decoration: underline;
+}
+a:visited {
+  color: #9E9E9E;
+}
