@@ -211,6 +211,7 @@ const renderChat = () => {
     chatElement.appendChild(messageContainer);
   });
   renderCodeBlocks();
+  chatElement.scrollTop = chatElement.scrollHeight;
 };
 
 
@@ -355,7 +356,6 @@ const sendMessageStream = async () => {
     console.error(error);
     chatHistory.push({ role: 'model', parts: error.message });
     toggleLoading(false);
-    chatElement.scrollTop = chatElement.scrollHeight;
     renderChat();
   }
 };
