@@ -118,6 +118,33 @@ function sanitizeHTML(str) {
   return sanitized;
 }
 
+function renderKaTeX(content) {
+    const displayPattern = /\$\$(.+?)\$\$|\\\[(.+?)\\\]/g;
+    const inlinePattern = /\$(.+?)\$|\\\((.+?)\\\)/g;
+
+    const renderMatch = (fullMatch, group1, group2, displayMode) => {
+        const tex = group1 || group2;
+        try {
+            return katex.renderToString(tex, {
+                throwOnError: false,
+                displayMode: displayMode
+            });
+        } catch (e) {
+            console.error(e);
+            return fullMatch;
+        }
+    };
+
+    content = content.replace(displayPattern, (match, group1, group2) => renderMatch(match, group1, group2, true));
+
+    content = content.replace(inlinePattern, (match, group1, group2) => {
+        if (match.startsWith("\\(") || match.startsWith("$")) {
+            return renderMatch(match, group1, group2, false);
+        }
+        return match;
+    });
+    return content;
+}
 const renderChat = () => {
   chatElement.innerHTML = '';
   chatHistory.forEach(({ role, parts, imageAttached, images }, index) => {
@@ -129,7 +156,7 @@ const renderChat = () => {
 
   const attachmentIndicator = imageAttached ? ' 📸' : '';
   const sanitizedContent = DOMPurify.sanitize(marked.parse(sanitizeExceptCodeBlocks(parts))) + attachmentIndicator;
-  message.innerHTML = sanitizedContent;
+  message.innerHTML = renderKaTeX(sanitizedContent);
   if (imageAttached && images.length > 0) {
       const imagePreviewContainer = document.createElement('div');
       imagePreviewContainer.classList.add('image-preview-container');
