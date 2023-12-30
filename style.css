@@ -80,7 +80,8 @@ body {
   align-items: flex-start;
 }
 .copy-msg-btn,
-.delete-msg-btn {
+.delete-msg-btn,
+.regenerate-msg-btn{
   color: #fff;
   padding: 5px 10px;
   background-color: #151515;
