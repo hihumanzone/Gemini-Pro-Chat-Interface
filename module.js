@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-    
+
 let chat;
 let chatHistory = [];
 
@@ -29,7 +29,7 @@ async function fileToGenerativePart(file) {
 
 async function createGenerativeModel(useVisionModel = false) {
   const genAI = new GoogleGenerativeAI(apiKeyInput.value);
-  return genAI.getGenerativeModel({
+  return await genAI.getGenerativeModel({
     model: useVisionModel ? "gemini-pro-vision" : "gemini-pro"
   });
 }
@@ -84,7 +84,7 @@ function addDeleteButton(container, index) {
 async function restartChatWithUpdatedHistory() {
     if (apiKeyInput.value) {
       const genAI = new GoogleGenerativeAI(apiKeyInput.value);
-      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      const model = await genAI.getGenerativeModel({ model: "gemini-pro" });
       chat = model.startChat({
         history: chatHistory,
         generationConfig: {
@@ -98,7 +98,7 @@ async function restartChatWithUpdatedHistory() {
 }
 
 function sanitizeExceptCodeBlocks(markdown) {
-  const regex = /(^```[\s\S]*?```$)|(`.*?`)/gm;
+  const regex = /(```[\s\S]*?\n```)|(`[^`\n]*?`)/gm;
   let lastIndex = 0;
   let result = '';
   markdown.replace(regex, (match, codeBlock, inlineCode, index) => {
@@ -110,9 +110,12 @@ function sanitizeExceptCodeBlocks(markdown) {
   return result;
 }
 function sanitizeHTML(str) {
-  const temp = document.createElement('div');
-  temp.textContent = str;
-  return temp.innerHTML;
+  let sanitized = str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+  return sanitized;
 }
 
 const renderChat = () => {
@@ -125,7 +128,8 @@ const renderChat = () => {
   message.classList.add('message', role);
 
   const attachmentIndicator = imageAttached ? ' 📸' : '';
-  message.innerHTML = marked.parse(sanitizeExceptCodeBlocks(parts)) + attachmentIndicator;
+  const sanitizedContent = DOMPurify.sanitize(marked.parse(sanitizeExceptCodeBlocks(parts))) + attachmentIndicator;
+  message.innerHTML = sanitizedContent;
   if (imageAttached && images.length > 0) {
       const imagePreviewContainer = document.createElement('div');
       imagePreviewContainer.classList.add('image-preview-container');
@@ -182,7 +186,7 @@ const initializeChat = async () => {
         imageInput.value = '';
         updateImageCounter();
         const genAI = new GoogleGenerativeAI(apiKeyInput.value);
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const model = await genAI.getGenerativeModel({ model: "gemini-pro" });
         chat = await model.startChat({
             history: [],
             generationConfig: {
