@@ -125,7 +125,7 @@ const renderChat = () => {
   message.classList.add('message', role);
 
   const attachmentIndicator = imageAttached ? ' 📸' : '';
-  message.innerHTML = renderMarkdownAndMath(sanitizeExceptCodeBlocks(parts)) + attachmentIndicator;
+  message.innerHTML = marked.parse(sanitizeExceptCodeBlocks(parts)) + attachmentIndicator;
   if (imageAttached && images.length > 0) {
       const imagePreviewContainer = document.createElement('div');
       imagePreviewContainer.classList.add('image-preview-container');
@@ -151,9 +151,7 @@ const renderChat = () => {
 
     chatElement.appendChild(messageContainer);
   });
-
   renderCodeBlocks();
-  chatElement.scrollTop = chatElement.scrollHeight;
 };
 
 
@@ -170,37 +168,6 @@ const loadApiKeyFromLocalStorage = () => {
 };
 
 document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
-
-const markAndExtractCodeBlocks = (html) => {
-  const codeBlockRegex = /<pre><code>[\s\S]*?<\/code><\/pre>|<code>[\s\S]*?<\/code>/g;
-  let codeBlocks = [];
-  const newHtml = html.replace(codeBlockRegex, match => `[code-block-${codeBlocks.push(match) - 1}]`);
-  return { newHtml, codeBlocks };
-};
-
-const restoreCodeBlocks = (html, blocks) => 
-  html.replace(/\[code-block-(\d+)\]/g, (match, index) => blocks[parseInt(index, 10)]);
-
-const replaceMathWithRendered = (html, regex, displayMode) => 
-  html.replace(regex, match => {
-    const math = match.slice(1, -1).trim();
-    try {
-      return katex.renderToString(math, { displayMode });
-    } catch {
-      return match;
-    }
-  });
-
-const renderMarkdownAndMath = (text) => {
-  let markdownHtml = marked.parse(text);
-  
-  let { newHtml, codeBlocks } = markAndExtractCodeBlocks(markdownHtml);
-  
-  newHtml = replaceMathWithRendered(newHtml, /(?<!\\)\$\$[\s\S]+?\$\$/g, true);
-  newHtml = replaceMathWithRendered(newHtml, /(?<!\\)\$[^$]+?\$/g, false);
-  
-  return restoreCodeBlocks(newHtml, codeBlocks);
-};
     
 const toggleLoading = (isLoading) => {
     loadingIndicator.style.display = isLoading ? 'flex' : 'none';
@@ -229,7 +196,7 @@ const initializeChat = async () => {
 };
 
 apiKeyInput.addEventListener('change', saveApiKeyToLocalStorage);
-apiKeyInput.addEventListener('change', initializeChat);
+apiKeyInput.addEventListener('change', restartChatWithUpdatedHistory);
 
 const displayImagePreviews = (files) => {
   const imagePreviewContainer = document.getElementById('image-preview-container');
@@ -319,8 +286,9 @@ const sendMessageStream = async () => {
     toggleLoading(false);
   } catch (error) {
     console.error(error);
-    chatHistory.push({ role: 'model', parts: `Error: ${error.message}` });
+    chatHistory.push({ role: 'model', parts: error.message });
     toggleLoading(false);
+    chatElement.scrollTop = chatElement.scrollHeight;
     renderChat();
   }
 };
