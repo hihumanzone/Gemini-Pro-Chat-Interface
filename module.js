@@ -105,6 +105,19 @@ function createRegenerateButton(text, index) {
   return regenerateButton;
 }
 
+const saveChatToLocalStorage = () => {
+    localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+};
+
+const loadChatHistoryFromLocalStorage = () => {
+    const savedChatHistory = localStorage.getItem('chatHistory');
+    if (savedChatHistory) {
+        chatHistory = JSON.parse(savedChatHistory);
+        renderChat();
+        restartChatWithUpdatedHistory();
+    }
+};
+
 async function restartChatWithUpdatedHistory() {
     if (apiKeyInput.value) {
       const genAI = new GoogleGenerativeAI(apiKeyInput.value);
@@ -211,6 +224,7 @@ const renderChat = () => {
     chatElement.appendChild(messageContainer);
   });
   renderCodeBlocks();
+  saveChatToLocalStorage(); 
   chatElement.scrollTop = chatElement.scrollHeight;
 };
 
@@ -223,11 +237,14 @@ const loadApiKeyFromLocalStorage = () => {
     const savedApiKey = localStorage.getItem('apiKey');
     if (savedApiKey) {
         apiKeyInput.value = savedApiKey;
-        initializeChat();
+        restartChatWithUpdatedHistory();
     }
 };
 
-document.addEventListener('DOMContentLoaded', loadApiKeyFromLocalStorage);
+document.addEventListener('DOMContentLoaded', () => {
+    loadApiKeyFromLocalStorage();
+    loadChatHistoryFromLocalStorage();
+});
     
 const toggleLoading = (isLoading) => {
     loadingIndicator.style.display = isLoading ? 'flex' : 'none';
@@ -246,6 +263,7 @@ const toggleLoading = (isLoading) => {
 const initializeChat = async () => {
     if (apiKeyInput.value) {
         chatHistory = [];
+        localStorage.removeItem('chatHistory');
         userInput.value = '';
         imageInput.value = '';
         updateImageCounter();
