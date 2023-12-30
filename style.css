@@ -209,3 +209,19 @@ a:hover, a:focus {
 a:visited {
   color: #9E9E9E;
 }
+.katex {
+  font-size: 1em;
+}
+.katex .katex-mathml {
+  display: none;
+}
+.katex-display {
+  margin: 1em 0;
+  max-width: 500px;
+  max-height: 200px;
+  overflow: auto;
+}
+.katex-container {
+  max-width: 500px;
+  max-height: 200px;
+}
