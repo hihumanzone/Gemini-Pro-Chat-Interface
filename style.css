@@ -33,12 +33,21 @@ body {
   box-sizing: border-box;
 }
 #send-container,
-#manage-container,
+#manage-container
+#chat-sessions-container,
+#api-key-container,
 .button-group {
   gap: 5px;
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+#manage-container {
+  flex-direction: column;
+}
+#chat-sessions-container,
+#api-key-container{
+  margin: 10px;
 }
 .message-container:hover .button-group {
   visibility: visible;
@@ -89,7 +98,7 @@ body {
   font-size: 0.8em;
   border: 1px solid #212128;
 }
-input, #send, #clear, #userInput, #toggle-manage, #uploadImageBtn {
+input, button, select, #send, #clear, #userInput, #toggle-manage, #uploadImageBtn {
   color: #fff;
   background: #151515;
   padding: 10px;
