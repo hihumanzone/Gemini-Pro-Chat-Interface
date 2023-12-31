@@ -35,6 +35,7 @@ async function createGenerativeModel(useVisionModel = false) {
   });
 }
 
+
 function addCopyButton(container, text) {
   let copyButton = document.createElement('button');
   copyButton.textContent = 'Copy';
@@ -198,7 +199,6 @@ document.getElementById('deleteSession').addEventListener('click', deleteChatSes
 
 document.addEventListener('DOMContentLoaded', () => {
   loadApiKeyFromLocalStorage();
-  loadChatSessionsIntoDropdown();
 });
 
 const saveChatToLocalStorage = async () => {
@@ -373,6 +373,7 @@ const renderChat = () => {
 const saveApiKeyToLocalStorage = () => {
     localStorage.setItem('apiKey', apiKeyInput.value);
     if (apiKeyInput.value) {
+    loadChatSessionsIntoDropdown();
   }
 };
 
@@ -380,6 +381,7 @@ const loadApiKeyFromLocalStorage = () => {
     const savedApiKey = localStorage.getItem('apiKey');
     if (savedApiKey) {
         apiKeyInput.value = savedApiKey;
+        loadChatSessionsIntoDropdown();
         loadChatHistoryFromLocalStorage();
     }
 };
