@@ -41,6 +41,7 @@ body {
   display: flex;
   flex-direction: row;
   align-items: center;
+  overflow: auto;
 }
 #manage-container {
   flex-direction: column;
