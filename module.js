@@ -326,10 +326,10 @@ function updateGenerationConfig(event) {
   initializeChat();
 }
 
-document.getElementById('maxOutputTokens').addEventListener('change', updateGenerationConfig);
-document.getElementById('temperature').addEventListener('change', updateGenerationConfig);
-document.getElementById('topP').addEventListener('change', updateGenerationConfig);
-document.getElementById('topK').addEventListener('change', updateGenerationConfig);
+document.getElementById('maxOutputTokens').addEventListener('input', updateGenerationConfig);
+document.getElementById('temperature').addEventListener('input', updateGenerationConfig);
+document.getElementById('topP').addEventListener('input', updateGenerationConfig);
+document.getElementById('topK').addEventListener('input', updateGenerationConfig);
 
 function resetGenerationConfigToDefault() {
   generationConfig.maxOutputTokens = 16384;
