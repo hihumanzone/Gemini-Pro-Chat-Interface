@@ -36,19 +36,24 @@ body {
 #manage-container
 #chat-sessions-container,
 #api-key-container,
+#generation-config,
 .button-group {
   gap: 4px;
   display: flex;
   flex-direction: row;
   align-items: center;
 }
-#manage-container {
+#manage-container
+#generation-config {
   flex-direction: column;
 }
 #chat-sessions-container,
-#api-key-container{
+#api-key-container {
   margin: 10px;
   overflow: auto;
+}
+#generation-config{
+  margin: 5vh;
 }
 .message-container:hover .button-group {
   visibility: visible;
@@ -239,4 +244,7 @@ a:visited {
 .katex-container {
   max-width: 500px;
   max-height: 200px;
+}
+.slider {
+  width: 100%;
 }
