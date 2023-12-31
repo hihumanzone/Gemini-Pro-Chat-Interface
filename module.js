@@ -355,54 +355,6 @@ async function initializeChat() {
     }
 }
 
-function sanitizeExceptCodeBlocks(markdown) {
-  const regex = /(```[\s\S]*?```)|(`[^`\n]*?`)/gm;
-  let lastIndex = 0;
-  let result = '';
-  markdown.replace(regex, (match, codeBlock, inlineCode, index) => {
-    result += sanitizeHTML(markdown.slice(lastIndex, index));
-    result += codeBlock || inlineCode;
-    lastIndex = index + match.length;
-  });
-  result += sanitizeHTML(markdown.slice(lastIndex));
-  return result;
-}
-function sanitizeHTML(str) {
-  let sanitized = str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-  return sanitized;
-}
-
-function renderKaTeX(content) {
-    const displayPattern = /\$\$(.+?)\$\$|\\\[(.+?)\\\]/g;
-    const inlinePattern = /\$(.+?)\$|\\\((.+?)\\\)/g;
-
-    const renderMatch = (fullMatch, group1, group2, displayMode) => {
-        const tex = group1 || group2;
-        try {
-            return katex.renderToString(tex, {
-                throwOnError: false,
-                displayMode: displayMode
-            });
-        } catch (e) {
-            console.error(e);
-            return fullMatch;
-        }
-    };
-
-    content = content.replace(displayPattern, (match, group1, group2) => renderMatch(match, group1, group2, true));
-
-    content = content.replace(inlinePattern, (match, group1, group2) => {
-        if (match.startsWith("\\(") || match.startsWith("$")) {
-            return renderMatch(match, group1, group2, false);
-        }
-        return match;
-    });
-    return content;
-}
 const renderChat = () => {
   chatElement.innerHTML = '';
   chatHistory.forEach(({ role, parts, imageAttached, images }, index) => {
@@ -413,8 +365,8 @@ const renderChat = () => {
   message.classList.add('message', role);
 
   const attachmentIndicator = imageAttached ? ' 📸' : '';
-  const sanitizedContent = DOMPurify.sanitize(marked.parse(sanitizeExceptCodeBlocks(parts))) + attachmentIndicator;
-  message.innerHTML = renderKaTeX(sanitizedContent);
+  const md = window.markdownit();
+  message.innerHTML = md.render(parts) + attachmentIndicator;
   if (imageAttached && images.length > 0) {
       const imagePreviewContainer = document.createElement('div');
       imagePreviewContainer.classList.add('image-preview-container');
@@ -445,10 +397,11 @@ const renderChat = () => {
     chatElement.appendChild(messageContainer);
   });
   renderCodeBlocks();
-  saveChatToLocalStorage(); 
+  saveChatToLocalStorage();
+  MathJax.typeset();
+  hljs.highlightAll();
   chatElement.scrollTop = chatElement.scrollHeight;
 };
-
 
 const saveApiKeyToLocalStorage = () => {
     localStorage.setItem('apiKey', apiKeyInput.value);
