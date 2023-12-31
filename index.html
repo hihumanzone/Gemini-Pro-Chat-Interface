@@ -25,18 +25,10 @@
   <div id="heading">Gemini Pro Chat Interface</div>
   </header>
   <div id="chat-container">
-    <div id="chat"></div>
-<div id="image-preview-container" class="hidden"></div>
-<div id="send-container">
-  <button id="toggle-manage" title="Toggle settings">&#9881;</button>
-  <input type="file" id="imageInput" accept="image/*" style="display: none;" multiple>
-  <label for="imageInput" id="uploadImageBtn" title="Upload Image">&#128247;<span id="imageCounter" class="image-counter">0</span></label>
-  <textarea id="userInput" placeholder="Type your message here..."></textarea>
-  <button id="send">Send</button>
-  <span id="loading">Generating... </span>
-</div>
-    <div id="manage-container" class="hidden">
-    <button id="removeAttachments" title="Remove Attachments">Remove all attachments</button>
+   <div id="manage-container" class="hidden">
+    <div id="api-key-container">
+    <input type="password" id="apiKeyInput" placeholder="Enter your API key">
+    </div>
     <div id="chat-sessions-container">
      <select id="chatSessions"></select>
      <button id="addSession">New Session</button>
@@ -48,7 +40,7 @@
   <input class="slider" type="range" id="maxOutputTokens" min="100" max="30720" value="16384" step="100">
   
   <label for="temperature">Temperature: <span id="temperatureValue">0.9</span></label>
-  <input class="slider" type="range" id="temperature" min="0.1" max="2" value="0.9" step="0.05">
+  <input class="slider" type="range" id="temperature" min="0.1" max="2" value="0.9" step="0.1">
   
   <label for="topP">Top P: <span id="topPValue">0.95</span></label>
   <input class="slider" type="range" id="topP" min="0.1" max="1" value="0.95" step="0.05">
@@ -57,9 +49,17 @@
   <input class="slider" type="range" id="topK" min="1" max="20" value="1" step="1">
   <button id="resetGenConfig">Reset to Default</button>
 </div>
-    <div id="api-key-container">
-    <input type="password" id="apiKeyInput" placeholder="Enter your API key">
-    </div>
+<button id="removeAttachments" title="Remove Attachments">Remove all attachments</button>
   </div>
+    <div id="chat"></div>
+<div id="image-preview-container" class="hidden"></div>
+<div id="send-container">
+  <button id="toggle-manage" title="Toggle settings">&#9881;</button>
+  <input type="file" id="imageInput" accept="image/*" style="display: none;" multiple>
+  <label for="imageInput" id="uploadImageBtn" title="Upload Image">&#128247;<span id="imageCounter" class="image-counter">0</span></label>
+  <textarea id="userInput" placeholder="Type your message here..."></textarea>
+  <button id="send">Send</button>
+  <span id="loading">Generating... </span>
+</div>
 </body>
 </html>
