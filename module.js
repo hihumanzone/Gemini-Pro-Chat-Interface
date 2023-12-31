@@ -33,7 +33,7 @@ async function fileToGenerativePart(file) {
 async function createGenerativeModel(useVisionModel = false) {
   const genAI = new GoogleGenerativeAI(apiKeyInput.value);
   return await genAI.getGenerativeModel({
-    model: useVisionModel ? "gemini-pro-vision" : "gemini-pro",
+    model: useVisionModel ? "gemini-pro-vision" : "gemini-pro"
   });
 }
 
