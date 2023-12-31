@@ -35,7 +35,6 @@ async function createGenerativeModel(useVisionModel = false) {
   });
 }
 
-
 function addCopyButton(container, text) {
   let copyButton = document.createElement('button');
   copyButton.textContent = 'Copy';
