@@ -36,8 +36,16 @@
   <span id="loading"> Generating... </span>
 </div>
     <div id="manage-container" class="hidden">
-      <button id="clear">Clear History</button>
-      <input type="password" id="apiKeyInput" placeholder="Enter your API key">
+    <div id="chat-sessions-container">
+     <label for="chatSessions">CHAT SESSIONS:</label>
+     <select id="chatSessions"></select>
+     <button id="addSession">New Session</button>
+     <button id="renameSession">Rename Session</button>
+     <button id="deleteSession">Delete Session</button>
+    </div>
+    <div id="api-key-container">
+    <label for="apiKeyInput">API KEY:</label>
+    <input type="password" id="apiKeyInput" placeholder="Enter your API key">
     </div>
   </div>
 </body>
