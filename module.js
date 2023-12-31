@@ -368,8 +368,8 @@ function sanitizeHTML(str) {
   let sanitized = str
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    //.replace(/"/g, '&quot;')
+    //.replace(/'/g, '&#39;');
   return sanitized;
 }
 
@@ -490,9 +490,11 @@ const displayImagePreviews = (files) => {
 
       const removeImageButton = document.createElement('button');
       removeImageButton.innerHTML = '&#128465;';
+      removeImageButton.classList.add('remove-img-btn');
       removeImageButton.addEventListener('click', () => removeImagePreview(index));
 
       const previewWrapper = document.createElement('div');
+      previewWrapper.classList.add('image-preview-wrapper');
       previewWrapper.appendChild(imgElement);
       previewWrapper.appendChild(removeImageButton);
 
