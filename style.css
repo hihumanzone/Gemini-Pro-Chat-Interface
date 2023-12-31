@@ -37,11 +37,10 @@ body {
 #chat-sessions-container,
 #api-key-container,
 .button-group {
-  gap: 5px;
+  gap: 4px;
   display: flex;
   flex-direction: row;
   align-items: center;
-  overflow: auto;
 }
 #manage-container {
   flex-direction: column;
@@ -49,6 +48,7 @@ body {
 #chat-sessions-container,
 #api-key-container{
   margin: 10px;
+  overflow: auto;
 }
 .message-container:hover .button-group {
   visibility: visible;
@@ -109,13 +109,13 @@ input, button, select, #send, #clear, #userInput, #toggle-manage, #uploadImageBt
 }
 #apiKeyInput {
   background: #010101;
-  width: calc(100% - 22px);
+  width: 100%;
 }
 #userInput {
   height: 35px;
   max-height: 120px;
   background: #010101;
-  width: calc(100% - 110px);
+  width: 100%;
   display: inline-block;
   vertical-align: top;
   resize: none;
@@ -126,8 +126,12 @@ input, button, select, #send, #clear, #userInput, #toggle-manage, #uploadImageBt
 }
 #toggle-manage,
 #uploadImageBtn {
-  width: 40px;
+  width: auto;
   display: inline-block;
+  display: flex;
+}
+#uploadImageBtn{
+  padding: 10px 6px;
 }
 #loading {
   display: none;
