@@ -149,7 +149,6 @@ input, button, select, #userInput, #uploadImageBtn {
 }
 #loading {
   display: none;
-  margin-left: 10px;
   align-self: center;
 }
 #image-preview-container {
