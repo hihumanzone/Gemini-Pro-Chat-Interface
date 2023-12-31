@@ -276,7 +276,7 @@ async function initializeChat() {
 }
 
 function sanitizeExceptCodeBlocks(markdown) {
-  const regex = /(```[\s\S]*?\n```)|(`[^`\n]*?`)/gm;
+  const regex = /(```[\s\S]*?```)|(`[^`\n]*?`)/gm;
   let lastIndex = 0;
   let result = '';
   markdown.replace(regex, (match, codeBlock, inlineCode, index) => {
