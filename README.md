@@ -5,7 +5,7 @@ Welcome to the GitHub repository for the Gemini Pro Chat Interface project. This
 ## To-Do list
 
 ### Not finished
-- a better implementation for sanitization
+- a better implementation for sanitization (I really need some help with this)
 - refactor CSS code
 - refactor javascript code
 
