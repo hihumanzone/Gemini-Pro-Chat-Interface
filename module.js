@@ -84,10 +84,23 @@ function addDeleteButton(container, index) {
 async function regenerateLastModelResponse() {
   if (chatHistory.length >= 2) {
     const lastUserMessageIndex = chatHistory.length - 2;
-    const lastUserMessage = chatHistory[lastUserMessageIndex].parts;
+    const lastUserMessage = chatHistory[lastUserMessageIndex];
     chatHistory.splice(lastUserMessageIndex, 2);
     await restartChatWithUpdatedHistory();
-    userInput.value = lastUserMessage;
+
+    userInput.value = lastUserMessage.parts;
+
+    if (lastUserMessage.imageAttached && lastUserMessage.images && lastUserMessage.images.length > 0) {
+      const dataTransfer = new DataTransfer();
+      for (let imageSrc of lastUserMessage.images) {
+        const response = await fetch(imageSrc);
+        const blob = await response.blob();
+        const file = new File([blob], 'regenerated_image', { type: blob.type });
+        dataTransfer.items.add(file);
+      }
+      imageInput.files = dataTransfer.files;
+      displayImagePreviews(imageInput.files);
+    }
     await sendMessageStream();
     userInput.value = '';
   } else {
@@ -105,17 +118,57 @@ function createRegenerateButton(text, index) {
   return regenerateButton;
 }
 
-const saveChatToLocalStorage = () => {
-    localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+const saveChatToLocalStorage = async () => {
+  const chatHistoryWithBase64 = await Promise.all(chatHistory.map(async (message) => {
+    if (message.imageAttached && message.images && message.images.length > 0) {
+      const base64Images = await Promise.all(message.images.map(async (imageUrl) => {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        return await blobToBase64(blob);
+      }));
+      return { ...message, images: base64Images };
+    }
+    return message;
+  }));
+
+  localStorage.setItem('chatHistory', JSON.stringify(chatHistoryWithBase64));
+};
+
+const blobToBase64 = (blob) => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      resolve(reader.result);
+    };
+    reader.readAsDataURL(blob);
+  });
 };
 
 const loadChatHistoryFromLocalStorage = () => {
-    const savedChatHistory = localStorage.getItem('chatHistory');
-    if (savedChatHistory) {
-        chatHistory = JSON.parse(savedChatHistory);
-        renderChat();
-        restartChatWithUpdatedHistory();
-    }
+  const savedChatHistory = localStorage.getItem('chatHistory');
+  if (savedChatHistory) {
+    const chatHistoryWithFiles = JSON.parse(savedChatHistory).map((message) => {
+      if (message.imageAttached && message.images && message.images.length > 0) {
+        const fileObjects = message.images.map((base64Data) => {
+          const byteString = atob(base64Data.split(',')[1]);
+          const arrayBuffer = new ArrayBuffer(byteString.length);
+          const intArray = new Uint8Array(arrayBuffer);
+          for (let i = 0; i < byteString.length; i++) {
+            intArray[i] = byteString.charCodeAt(i);
+          }
+          const blob = new Blob([intArray], { type: 'image/jpeg' }); 
+          const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+          return URL.createObjectURL(file); 
+        });
+        return { ...message, images: fileObjects };
+      }
+      return message;
+    });
+
+    chatHistory = chatHistoryWithFiles;
+    renderChat();
+    restartChatWithUpdatedHistory();
+  }
 };
 
 async function restartChatWithUpdatedHistory() {
