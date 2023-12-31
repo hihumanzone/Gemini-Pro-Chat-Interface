@@ -2,12 +2,13 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 let chat;
 let chatHistory = [];
+let currentSession = 'default';
+const defaultChatHistory = JSON.stringify({ default: [] });
 
 const chatElement = document.getElementById('chat');
 const userInput = document.getElementById('userInput');
 const apiKeyInput = document.getElementById('apiKeyInput');
 const sendButton = document.getElementById('send');
-const clearButton = document.getElementById('clear');
 const loadingIndicator = document.getElementById('loading');
 const imageInput = document.getElementById('imageInput');
 const uploadImageBtn = document.getElementById('uploadImageBtn');
@@ -76,7 +77,7 @@ function addDeleteButton(container, index) {
   deleteButton.classList.add('delete-msg-btn');
   deleteButton.onclick = function() {
     chatHistory.splice(index, 1);
-    restartChatWithUpdatedHistory();
+    initializeChat();
   };
   container.appendChild(deleteButton);
 }
@@ -86,7 +87,7 @@ async function regenerateLastModelResponse() {
     const lastUserMessageIndex = chatHistory.length - 2;
     const lastUserMessage = chatHistory[lastUserMessageIndex];
     chatHistory.splice(lastUserMessageIndex, 2);
-    await restartChatWithUpdatedHistory();
+    await initializeChat();
 
     userInput.value = lastUserMessage.parts;
 
@@ -118,7 +119,90 @@ function createRegenerateButton(text, index) {
   return regenerateButton;
 }
 
+const addChatSession = () => {
+  const newSessionName = prompt('Enter new session name:');
+  if (newSessionName) {
+    const chatSessionsHistory = JSON.parse(localStorage.getItem('chatHistory') || defaultChatHistory);
+    if (chatSessionsHistory[newSessionName]) {
+      alert('Session already exists.');
+      return;
+    }
+    chatSessionsHistory[newSessionName] = [];
+    localStorage.setItem('chatHistory', JSON.stringify(chatSessionsHistory));
+    currentSession = newSessionName;
+    loadChatSessionsIntoDropdown();
+    loadChatHistoryFromLocalStorage();
+    renderChat();
+  }
+};
+
+const renameChatSession = () => {
+  const newSessionName = prompt('Enter new session name:');
+  if (newSessionName) {
+    const chatSessionsHistory = JSON.parse(localStorage.getItem('chatHistory') || defaultChatHistory);
+    if (chatSessionsHistory[newSessionName]) {
+      alert('Session already exists.');
+      return;
+    }
+    chatSessionsHistory[newSessionName] = chatSessionsHistory[currentSession];
+    delete chatSessionsHistory[currentSession];
+    localStorage.setItem('chatHistory', JSON.stringify(chatSessionsHistory));
+    currentSession = newSessionName;
+    loadChatSessionsIntoDropdown();
+  }
+};
+
+const deleteChatSession = () => {
+  if (currentSession === 'default') {
+    if (confirm(`Are you sure you want to delete the "${currentSession}" session? This cannot be undone.`)) {
+      const chatSessionsHistory = JSON.parse(localStorage.getItem('chatHistory') || defaultChatHistory);
+      chatSessionsHistory['default'] = [];
+      localStorage.setItem('chatHistory', JSON.stringify(chatSessionsHistory));
+      loadChatHistoryFromLocalStorage();
+      renderChat();
+    }
+  } else {
+    if (confirm(`Are you sure you want to delete the "${currentSession}" session? This cannot be undone.`)) {
+      const chatSessionsHistory = JSON.parse(localStorage.getItem('chatHistory') || defaultChatHistory);
+      delete chatSessionsHistory[currentSession];
+      localStorage.setItem('chatHistory', JSON.stringify(chatSessionsHistory));
+      currentSession = 'default';
+      loadChatSessionsIntoDropdown();
+      loadChatHistoryFromLocalStorage();
+      renderChat();
+    }
+  }
+};
+
+const loadChatSessionsIntoDropdown = () => {
+  const chatSessionsHistory = JSON.parse(localStorage.getItem('chatHistory') || defaultChatHistory);
+  const chatSessionsDropdown = document.getElementById('chatSessions');
+  chatSessionsDropdown.innerHTML = '';
+  for (const sessionName in chatSessionsHistory) {
+    const option = document.createElement('option');
+    option.value = sessionName;
+    option.text = sessionName;
+    chatSessionsDropdown.appendChild(option);
+  }
+  chatSessionsDropdown.value = currentSession;
+};
+
+document.getElementById('chatSessions').addEventListener('change', e => {
+  currentSession = e.target.value;
+  loadChatHistoryFromLocalStorage();
+  renderChat();
+});
+
+document.getElementById('addSession').addEventListener('click', addChatSession);
+document.getElementById('renameSession').addEventListener('click', renameChatSession);
+document.getElementById('deleteSession').addEventListener('click', deleteChatSession);
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadApiKeyFromLocalStorage();
+});
+
 const saveChatToLocalStorage = async () => {
+  const chatSessionsHistory = JSON.parse(localStorage.getItem('chatHistory') || defaultChatHistory);
   const chatHistoryWithBase64 = await Promise.all(chatHistory.map(async (message) => {
     if (message.imageAttached && message.images && message.images.length > 0) {
       const base64Images = await Promise.all(message.images.map(async (imageUrl) => {
@@ -131,7 +215,8 @@ const saveChatToLocalStorage = async () => {
     return message;
   }));
 
-  localStorage.setItem('chatHistory', JSON.stringify(chatHistoryWithBase64));
+  chatSessionsHistory[currentSession] = chatHistoryWithBase64;
+  localStorage.setItem('chatHistory', JSON.stringify(chatSessionsHistory));
 };
 
 const blobToBase64 = (blob) => {
@@ -145,33 +230,36 @@ const blobToBase64 = (blob) => {
 };
 
 const loadChatHistoryFromLocalStorage = () => {
-  const savedChatHistory = localStorage.getItem('chatHistory');
-  if (savedChatHistory) {
-    const chatHistoryWithFiles = JSON.parse(savedChatHistory).map((message) => {
-      if (message.imageAttached && message.images && message.images.length > 0) {
-        const fileObjects = message.images.map((base64Data) => {
-          const byteString = atob(base64Data.split(',')[1]);
-          const arrayBuffer = new ArrayBuffer(byteString.length);
-          const intArray = new Uint8Array(arrayBuffer);
-          for (let i = 0; i < byteString.length; i++) {
-            intArray[i] = byteString.charCodeAt(i);
-          }
-          const blob = new Blob([intArray], { type: 'image/jpeg' }); 
-          const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
-          return URL.createObjectURL(file); 
-        });
-        return { ...message, images: fileObjects };
-      }
-      return message;
-    });
-
-    chatHistory = chatHistoryWithFiles;
-    renderChat();
-    restartChatWithUpdatedHistory();
+  const chatSessionsHistory = JSON.parse(localStorage.getItem('chatHistory') || defaultChatHistory);
+  if (!Array.isArray(chatSessionsHistory[currentSession])) {
+    chatSessionsHistory[currentSession] = [];
   }
+
+  const sessionHistory = chatSessionsHistory[currentSession];
+  const chatHistoryWithFiles = sessionHistory.map((message) => {
+    if (message.imageAttached && message.images && message.images.length > 0) {
+      const fileObjects = message.images.map((base64Data) => {
+        const byteString = atob(base64Data.split(',')[1]);
+        const arrayBuffer = new ArrayBuffer(byteString.length);
+        const intArray = new Uint8Array(arrayBuffer);
+        for (let i = 0; i < byteString.length; i++) {
+          intArray[i] = byteString.charCodeAt(i);
+        }
+        const blob = new Blob([intArray], { type: 'image/jpeg' }); 
+        const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+        return URL.createObjectURL(file); 
+      });
+      return { ...message, images: fileObjects };
+    }
+    return message;
+  });
+
+  chatHistory = chatHistoryWithFiles;
+  renderChat();
+  initializeChat();
 };
 
-async function restartChatWithUpdatedHistory() {
+async function initializeChat() {
     if (apiKeyInput.value) {
       const genAI = new GoogleGenerativeAI(apiKeyInput.value);
       const model = await genAI.getGenerativeModel({ model: "gemini-pro" });
@@ -284,27 +372,25 @@ const renderChat = () => {
 
 const saveApiKeyToLocalStorage = () => {
     localStorage.setItem('apiKey', apiKeyInput.value);
+    if (apiKeyInput.value) {
+    loadChatSessionsIntoDropdown();
+  }
 };
 
 const loadApiKeyFromLocalStorage = () => {
     const savedApiKey = localStorage.getItem('apiKey');
     if (savedApiKey) {
         apiKeyInput.value = savedApiKey;
-        restartChatWithUpdatedHistory();
+        loadChatSessionsIntoDropdown();
+        loadChatHistoryFromLocalStorage();
     }
 };
-
-document.addEventListener('DOMContentLoaded', () => {
-    loadApiKeyFromLocalStorage();
-    loadChatHistoryFromLocalStorage();
-});
     
 const toggleLoading = (isLoading) => {
     loadingIndicator.style.display = isLoading ? 'flex' : 'none';
     sendButton.disabled = isLoading;
     const deleteButtons = document.querySelectorAll('.delete-msg-btn');
     const regenerateButtons = document.querySelectorAll('.regenerate-msg-btn');
-    clearButton.disabled = isLoading;
     deleteButtons.forEach((button) => {
     button.disabled = isLoading;
     });
@@ -312,30 +398,9 @@ const toggleLoading = (isLoading) => {
     button.disabled = isLoading;
     });
 };
-    
-const initializeChat = async () => {
-    if (apiKeyInput.value) {
-        chatHistory = [];
-        localStorage.removeItem('chatHistory');
-        userInput.value = '';
-        imageInput.value = '';
-        updateImageCounter();
-        const genAI = new GoogleGenerativeAI(apiKeyInput.value);
-        const model = await genAI.getGenerativeModel({ model: "gemini-pro" });
-        chat = await model.startChat({
-            history: [],
-            generationConfig: {
-                maxOutputTokens: 16384,
-            },
-        });
-        renderChat();
-    } else {
-        alert('API key is required to initialize the chat.');
-    }
-};
 
 apiKeyInput.addEventListener('change', saveApiKeyToLocalStorage);
-apiKeyInput.addEventListener('change', restartChatWithUpdatedHistory);
+apiKeyInput.addEventListener('change', initializeChat);
 
 const displayImagePreviews = (files) => {
   const imagePreviewContainer = document.getElementById('image-preview-container');
@@ -432,8 +497,6 @@ const sendMessageStream = async () => {
 };
 
 sendButton.addEventListener('click', sendMessageStream);
-
-clearButton.addEventListener('click', initializeChat);
 
 document.querySelector('button#toggle-manage').addEventListener('click', () => {
   const manageContainer = document.getElementById('manage-container');
