@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
 
 let chat;
 let chatHistory = [];
@@ -12,6 +13,7 @@ const sendButton = document.getElementById('send');
 const loadingIndicator = document.getElementById('loading');
 const imageInput = document.getElementById('imageInput');
 const uploadImageBtn = document.getElementById('uploadImageBtn');
+const removeAttachmentsButton = document.getElementById('removeAttachments');
 
 async function fileToGenerativePart(file) {
   return new Promise((resolve) => {
@@ -31,7 +33,7 @@ async function fileToGenerativePart(file) {
 async function createGenerativeModel(useVisionModel = false) {
   const genAI = new GoogleGenerativeAI(apiKeyInput.value);
   return await genAI.getGenerativeModel({
-    model: useVisionModel ? "gemini-pro-vision" : "gemini-pro"
+    model: useVisionModel ? "gemini-pro-vision" : "gemini-pro",
   });
 }
 
@@ -198,6 +200,7 @@ document.getElementById('renameSession').addEventListener('click', renameChatSes
 document.getElementById('deleteSession').addEventListener('click', deleteChatSession);
 
 document.addEventListener('DOMContentLoaded', () => {
+  loadGenerationConfigFromLocalStorage();
   loadApiKeyFromLocalStorage();
 });
 
@@ -259,16 +262,90 @@ const loadChatHistoryFromLocalStorage = () => {
   initializeChat();
 };
 
+const generationConfig = {
+  maxOutputTokens: 16384,
+  temperature: 0.9,
+  topP: 0.95,
+  topK: 1,
+};
+
+const safetySettings = [
+    {
+      category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+  ];
+
+function saveGenerationConfigToLocalStorage() {
+  localStorage.setItem('generationConfig', JSON.stringify(generationConfig));
+}
+
+function loadGenerationConfigFromLocalStorage() {
+  const savedConfig = JSON.parse(localStorage.getItem('generationConfig'));
+  if (savedConfig) {
+    Object.assign(generationConfig, savedConfig);
+    updateSliderUI();
+  }
+}
+
+function updateSliderUI() {
+  document.getElementById('maxOutputTokens').value = generationConfig.maxOutputTokens;
+  document.getElementById('maxOutputTokensValue').textContent = generationConfig.maxOutputTokens;
+  
+  document.getElementById('temperature').value = generationConfig.temperature;
+  document.getElementById('temperatureValue').textContent = generationConfig.temperature;
+  
+  document.getElementById('topP').value = generationConfig.topP;
+  document.getElementById('topPValue').textContent = generationConfig.topP;
+  
+  document.getElementById('topK').value = generationConfig.topK;
+  document.getElementById('topKValue').textContent = generationConfig.topK;
+}
+
+function updateGenerationConfig(event) {
+  const target = event.target.id;
+  const value = parseFloat(event.target.value);
+  generationConfig[target] = value;
+  document.getElementById(target + 'Value').textContent = value;
+  saveGenerationConfigToLocalStorage();
+  initializeChat();
+}
+
+document.getElementById('maxOutputTokens').addEventListener('change', updateGenerationConfig);
+document.getElementById('temperature').addEventListener('change', updateGenerationConfig);
+document.getElementById('topP').addEventListener('change', updateGenerationConfig);
+document.getElementById('topK').addEventListener('change', updateGenerationConfig);
+
+function resetGenerationConfigToDefault() {
+  generationConfig.maxOutputTokens = 16384;
+  generationConfig.temperature = 0.9;
+  generationConfig.topP = 0.95;
+  generationConfig.topK = 1;
+  updateSliderUI();
+  saveGenerationConfigToLocalStorage();
+}
+
+document.getElementById('resetGenConfig').addEventListener('click', resetGenerationConfigToDefault);
+
 async function initializeChat() {
     if (apiKeyInput.value) {
       const genAI = new GoogleGenerativeAI(apiKeyInput.value);
       const model = await genAI.getGenerativeModel({ model: "gemini-pro" });
       chat = model.startChat({
         history: chatHistory,
-        generationConfig: {
-          maxOutputTokens: 16384,
-        },
-      });
+        generationConfig,safetySettings});
       renderChat();
     } else {
       alert('API key is required to initialize the chat.');
@@ -406,16 +483,35 @@ const displayImagePreviews = (files) => {
   const imagePreviewContainer = document.getElementById('image-preview-container');
   imagePreviewContainer.innerHTML = '';
   if (files.length > 0) {
-    Array.from(files).forEach((file) => {
+    Array.from(files).forEach((file, index) => {
       const imgElement = document.createElement('img');
       imgElement.src = URL.createObjectURL(file);
       imgElement.onload = () => URL.revokeObjectURL(imgElement.src);
-      imagePreviewContainer.appendChild(imgElement);
+
+      const removeImageButton = document.createElement('button');
+      removeImageButton.innerHTML = '&#128465;';
+      removeImageButton.addEventListener('click', () => removeImagePreview(index));
+
+      const previewWrapper = document.createElement('div');
+      previewWrapper.appendChild(imgElement);
+      previewWrapper.appendChild(removeImageButton);
+
+      imagePreviewContainer.appendChild(previewWrapper);
     });
     imagePreviewContainer.classList.remove('hidden');
   } else {
     imagePreviewContainer.classList.add('hidden');
   }
+};
+
+const removeImagePreview = (index) => {
+  const filesArray = Array.from(imageInput.files);
+  filesArray.splice(index, 1);
+  const dataTransfer = new DataTransfer();
+  filesArray.forEach((file) => dataTransfer.items.add(file));
+  imageInput.files = dataTransfer.files;
+  displayImagePreviews(imageInput.files);
+  updateImageCounter();
 };
 
 const updateImageCounter = () => {
@@ -424,7 +520,15 @@ const updateImageCounter = () => {
   imageCounterElement.textContent = fileCount;
   displayImagePreviews(imageInput.files);
 };
+
 imageInput.addEventListener('change', updateImageCounter);
+
+const removeAttachments = () => {
+    imageInput.value = '';
+    updateImageCounter();
+};
+
+removeAttachmentsButton.addEventListener('click', removeAttachments);
 
 const sendMessageStream = async () => {
   if (!chat || !apiKeyInput.value) {
@@ -449,10 +553,7 @@ const sendMessageStream = async () => {
   const model = await createGenerativeModel(useVisionModel);
   chat = await model.startChat({
     history: chatHistory,
-    generationConfig: {
-      maxOutputTokens: 16384,
-    },
-  });
+    generationConfig,safetySettings});
   if (msg === '') return;
 
   chatHistory.push({
