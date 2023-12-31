@@ -603,7 +603,9 @@ sendButton.addEventListener('click', sendMessageStream);
 
 document.querySelector('button#toggle-manage').addEventListener('click', () => {
   const manageContainer = document.getElementById('manage-container');
+  const chatContainer = document.getElementById('chat');
   manageContainer.classList.toggle('hidden');
+  chatContainer.classList.toggle('hidden');
 });
 
 const adjustTextareaHeight = (element) => {
