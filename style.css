@@ -32,23 +32,26 @@ body {
   flex-direction: column;
   box-sizing: border-box;
 }
+#generation-config,
+.image-preview-wrapper,
 #send-container,
-#manage-container
 #chat-sessions-container,
 #api-key-container,
-#generation-config,
 .button-group {
   gap: 4px;
   display: flex;
   flex-direction: row;
   align-items: center;
 }
-#manage-container
-#generation-config {
+#manage-container,
+#generation-config,
+.image-preview-wrapper{
   flex-direction: column;
 }
-#chat-sessions-container,
-#api-key-container {
+.image-preview-wrapper{
+  gap: 0;
+}
+#chat-sessions-container {
   margin: 10px;
   overflow: auto;
 }
@@ -68,7 +71,8 @@ body {
 #chat {
   flex-grow: 1;
   overflow-y: auto;
-  border: 1px solid #222222;
+  border: 1px solid #333;
+  border-radius: 10px;
   padding: 10px;
 }
 .message {
@@ -101,24 +105,26 @@ body {
   background-color: #151515;
   border-radius: 8px;
   font-size: 0.8em;
-  border: 1px solid #212128;
+  border: 1px solid #333;
+  box-shadow: 0 2px 30px rgba(255, 255, 255, 0.15);
 }
-input, button, select, #send, #clear, #userInput, #toggle-manage, #uploadImageBtn {
+input, button, select, #userInput, #uploadImageBtn {
   color: #fff;
-  background: #151515;
+  background: #1b1b1b;
   padding: 10px;
   margin: 5px 0;
   border-radius: 10px;
-  border: 1px solid #222222;
+  border: 1px solid #333;
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
 }
 #apiKeyInput {
-  background: #010101;
+  background: #0C0C0C;
   width: 100%;
 }
 #userInput {
   height: 35px;
   max-height: 120px;
-  background: #010101;
+  background: #0C0C0C;
   width: 100%;
   display: inline-block;
   vertical-align: top;
@@ -149,6 +155,13 @@ input, button, select, #send, #clear, #userInput, #toggle-manage, #uploadImageBt
   overflow-x: auto;
   padding: 5px;
 }
+#image-preview-container img {
+  max-height: 100px;
+  border-radius: 5px;
+  object-fit: cover;
+  border: 2px solid #222222;
+  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+}
 .image-preview-container {
   display: flex;
   flex-wrap: wrap;
@@ -166,12 +179,6 @@ input, button, select, #send, #clear, #userInput, #toggle-manage, #uploadImageBt
   border-radius: 4px;
   object-fit: cover;
   border: 2px solid #111;
-}
-
-#image-preview-container img {
-  max-height: 100px;
-  border-radius: 5px;
-  object-fit: cover;
 }
     pre code {
       display: block;
