@@ -2,6 +2,22 @@
 
 Welcome to the GitHub repository for the Gemini Pro Chat Interface project. This application provides an elegant and intuitive chat interface for interacting with the Gemini Pro model.
 
+## To-Do list
+
+### Not finished
+- chat sessions support
+- a better implementation for sanitization
+- refactor CSS code
+
+### Finished
+- save chat to local storage support
+- latex support
+- markdown support
+- images support
+- regenerate butten support
+- sanitize support
+- copy and delete support
+
 ## Live Demo
 
 Check out the live demo [here](https://geminihzhui.vercel.app/).
