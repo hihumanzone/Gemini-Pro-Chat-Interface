@@ -139,6 +139,9 @@ const addChatSession = () => {
 };
 
 const renameChatSession = () => {
+  if (currentSession === 'default') {
+    alert('You can\'t rename the default session.');
+  } else {
   const newSessionName = prompt('Enter new session name:');
   if (newSessionName) {
     const chatSessionsHistory = JSON.parse(localStorage.getItem('chatHistory') || defaultChatHistory);
@@ -152,11 +155,11 @@ const renameChatSession = () => {
     currentSession = newSessionName;
     loadChatSessionsIntoDropdown();
   }
-};
+}};
 
 const deleteChatSession = () => {
   if (currentSession === 'default') {
-    if (confirm(`Are you sure you want to delete the "${currentSession}" session? This cannot be undone.`)) {
+    if (confirm(`Are you sure you want to delete the default session? This cannot be undone.`)) {
       const chatSessionsHistory = JSON.parse(localStorage.getItem('chatHistory') || defaultChatHistory);
       chatSessionsHistory['default'] = [];
       localStorage.setItem('chatHistory', JSON.stringify(chatSessionsHistory));
