@@ -368,8 +368,8 @@ function sanitizeHTML(str) {
   let sanitized = str
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
-    //.replace(/"/g, '&quot;')
-    //.replace(/'/g, '&#39;');
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
   return sanitized;
 }
 
