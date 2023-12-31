@@ -5,11 +5,11 @@ Welcome to the GitHub repository for the Gemini Pro Chat Interface project. This
 ## To-Do list
 
 ### Not finished
-- chat sessions support
 - a better implementation for sanitization
 - refactor CSS code
 
 ### Finished
+- chat sessions support (new)
 - save chat to local storage support
 - latex support
 - markdown support
