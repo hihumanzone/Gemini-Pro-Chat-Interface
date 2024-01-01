@@ -105,7 +105,6 @@ async function regenerateLastModelResponse() {
       displayImagePreviews(imageInput.files);
     }
     await sendMessageStream();
-    userInput.value = '';
   } else {
     console.error('Unable to regenerate: not enough history present.');
   }
