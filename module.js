@@ -205,6 +205,7 @@ document.getElementById('deleteSession').addEventListener('click', deleteChatSes
 document.addEventListener('DOMContentLoaded', () => {
   loadGenerationConfigFromLocalStorage();
   loadApiKeyFromLocalStorage();
+  initializeChat();
 });
 
 const saveChatToLocalStorage = async () => {
