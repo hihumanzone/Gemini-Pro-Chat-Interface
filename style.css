@@ -47,36 +47,46 @@ body {
 .button-group {
   gap: 4px;
   display: flex;
-  flex-direction: row;
   align-items: center;
 }
-#manage-container{
-  flex-grow: 1;
-  overflow-y: auto;
-  border: 1px solid #333;
-  border-radius: 10px;
-  padding: 10px;
-}
-#manage-container,
-#generation-config,
-.image-preview-wrapper{
-  flex-direction: column;
-}
-.image-preview-wrapper{
-  gap: 0;
-}
-#chat-sessions-container {
-  overflow: auto;
-}
-#api-key-container,
 #chat-sessions-container,
-#generation-config
-{
+#generation-config {
+  overflow: auto;
   margin: 30px 0;
   gap: 5px;
 }
 #api-key-container {
   margin-top: 0;
+}
+#manage-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 10px;
+  flex-direction: column;
+}
+.image-preview-wrapper {
+  gap: 0;
+  flex-direction: column;
+}
+#image-preview-container {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 5px;
+  overflow-x: auto;
+  min-height: 150px;
+}
+#image-preview-container img {
+  max-height: 100px;
+  border-radius: 5px;
+  object-fit: cover;
+  border: 2px solid #222222;
+  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+}
+#generation-config {
+  flex-direction: column;
 }
 .message-container:hover .button-group {
   visibility: visible;
@@ -160,20 +170,6 @@ input, button, select, #userInput, #uploadImageBtn {
   display: none;
   align-self: center;
 }
-#image-preview-container {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-  overflow-x: auto;
-  padding: 5px;
-}
-#image-preview-container img {
-  max-height: 100px;
-  border-radius: 5px;
-  object-fit: cover;
-  border: 2px solid #222222;
-  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
-}
 .image-preview-container {
   display: flex;
   flex-wrap: wrap;
@@ -191,46 +187,6 @@ input, button, select, #userInput, #uploadImageBtn {
   object-fit: cover;
   border: 2px solid #111;
 }
-    pre code {
-      display: block;
-      padding: 10px;
-      margin: 0 0 4px;
-      overflow: auto;
-      font-family: monospace;
-      font-size: 0.9em;
-      background-color: #080808;
-      border: 1px solid #17171e;
-      border-radius: 4px;
-    }
-    code {
-      padding: 2px 4px;
-      font-family: monospace;
-      font-size: 0.9em;
-      background-color: #080808;
-      border: 1px solid #17171e;
-      border-radius: 4px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 10px;
-    }
-    table th,
-    table td {
-      padding: 8px;
-      text-align: left;
-      border: 1px solid #000000;
-    }
-    table thead th {
-      background-color: #0a0a0a;
-    }
-    blockquote {
-      padding: 10px 20px;
-      margin: 0 0 10px;
-      background-color: #0a0a0a;
-      border-left: 4px solid #1a1d20;
-      font-style: italic;
-    }
 .hidden {
     display: none!important;
 }
@@ -282,4 +238,40 @@ label {
 }
 span {
   font-weight: bold;
+}
+pre {
+  background-color: #2d2d2d; 
+  border: 1px solid #444;
+  border-radius: 10px;
+  overflow-x: auto;
+  padding: 10px;
+}
+pre code {
+  background-color: transparent;
+}
+code {
+  background-color: #333;
+  border-radius: 3px;
+  padding: 2px 4px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+table th,
+table td {
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #000000;
+}
+table thead th {
+  background-color: #0a0a0a;
+}
+blockquote {
+  padding: 10px 20px;
+  margin: 0 0 10px;
+  background-color: #0a0a0a;
+  border-left: 4px solid #1a1d20;
+  font-style: italic;
 }
