@@ -42,14 +42,12 @@ body {
 #generation-config,
 .image-preview-wrapper,
 #send-container,
-#chat-sessions-container,
 #api-key-container,
 .button-group {
   gap: 4px;
   display: flex;
   align-items: center;
 }
-#chat-sessions-container,
 #generation-config {
   overflow: auto;
   margin: 30px 0;
@@ -73,7 +71,6 @@ body {
 #image-preview-container {
   display: flex;
   gap: 10px;
-  margin-top: 10px;
   padding: 5px;
   overflow-x: auto;
   min-height: 150px;
@@ -175,10 +172,10 @@ input, button, select, #userInput, #uploadImageBtn {
   flex-wrap: wrap;
   gap: 5px;
   margin: 0 0 5px 5px;
-  padding: 5px;
-  border: 10px solid #222222;
-  border-radius: 10px;
-  box-shadow: 0 2px 30px rgba(255, 255, 255, 0.2);
+  padding: 2px;
+  border: 8px solid #222222;
+  border-radius: 15px;
+  box-shadow: 0 2px 30px rgba(255, 255, 255, 0.15);
 }
 .image-preview {
   max-width: 100px;
@@ -274,4 +271,11 @@ blockquote {
   background-color: #0a0a0a;
   border-left: 4px solid #1a1d20;
   font-style: italic;
+}
+#sessions-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #333;
+  border-radius: 10px;
 }
