@@ -42,12 +42,14 @@ body {
 #generation-config,
 .image-preview-wrapper,
 #send-container,
+#chat-sessions-container,
 #api-key-container,
 .button-group {
   gap: 4px;
   display: flex;
   align-items: center;
 }
+#chat-sessions-container,
 #generation-config {
   overflow: auto;
   margin: 30px 0;
