@@ -1,17 +1,18 @@
 body {
   font-family: Arial, sans-serif;
   color: #fff;
-  background: #0b0b0b;
-  padding: 5px;
+  background: #070707;
+  padding: 0px;
   margin: 0;
   display: flex;
   flex-direction: column;
+  height: 98vh;
 }
 #heading {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 1.5rem;
   font-weight: normal;
-  color: #ddd;
+  color: #d1d1d1;
   text-align: center;
   margin: 0;
   padding: 0.25em;
@@ -19,22 +20,21 @@ body {
   line-height: 1.2;
   word-spacing: 2px;
   text-transform: uppercase;
-  text-shadow: 0 2px 20px rgba(255,255,255, 0.5);
+  text-shadow: 0 2px 20px rgba(255, 255, 255, 0.5);
 }
 #chat {
   flex-grow: 1;
   overflow-y: auto;
   border: 1px solid #333;
+  background: #000000;
   border-radius: 10px;
   padding: 10px;
 }
 #chat-container {
-  height: calc(100vh - 55px);
+  height: 100%;
   overflow: hidden;
-  background: #000000;
-  border-radius: 5px;
+  background: #070707;
   padding: 15px;
-  box-shadow: 0 2px 10px rgba(255,255,255,0.1);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -52,7 +52,7 @@ body {
 #chat-sessions-container,
 #generation-config {
   overflow: auto;
-  margin: 30px 0;
+  margin: 30px 10px;
   gap: 5px;
 }
 #api-key-container {
@@ -135,9 +135,12 @@ input, button, select, #userInput, #uploadImageBtn {
   background: #1b1b1b;
   padding: 10px;
   margin: 5px 0;
-  border-radius: 10px;
+  border-radius: 15px;
   border: 1px solid #333;
   box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+}
+#removeAttachments {
+  margin: 0 10px;
 }
 #apiKeyInput {
   background: #0C0C0C;
@@ -204,7 +207,7 @@ a:visited {
 .slider {
   -webkit-appearance: none;
   appearance: none;
-  width: 90%;
+  width: 92%;
   height: 5px;
   background: #444;
   outline: none;
@@ -233,7 +236,7 @@ a:visited {
 label {
   display: block;
   color: #fff;
-  font-size: 14px;
+  font-size: 16px;
 }
 span {
   font-weight: bold;
@@ -273,11 +276,4 @@ blockquote {
   background-color: #0a0a0a;
   border-left: 4px solid #1a1d20;
   font-style: italic;
-}
-#sessions-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border: 1px solid #333;
-  border-radius: 10px;
 }
