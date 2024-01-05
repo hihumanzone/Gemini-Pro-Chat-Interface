@@ -107,7 +107,8 @@ body {
   box-shadow: 0 2px 30px rgba(255, 255, 255, 0.15);
 }
 .message.user {
-  background-color: #0e292e;
+  background-color: #112324;
+  box-shadow: 0 2px 30px rgba(125, 248, 255, 0.2);
 }
 .message-container {
   display: flex;
