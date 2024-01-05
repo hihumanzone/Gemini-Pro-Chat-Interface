@@ -204,7 +204,6 @@ document.getElementById('deleteSession').addEventListener('click', deleteChatSes
 document.addEventListener('DOMContentLoaded', () => {
   loadGenerationConfigFromLocalStorage();
   loadApiKeyFromLocalStorage();
-  initializeChat();
 });
 
 const saveChatToLocalStorage = async () => {
@@ -411,25 +410,25 @@ const saveApiKeyToLocalStorage = () => {
 };
 
 const loadApiKeyFromLocalStorage = () => {
-    const savedApiKey = localStorage.getItem('apiKey');
-    if (savedApiKey) {
-        apiKeyInput.value = savedApiKey;
-        loadChatSessionsIntoDropdown();
-        loadChatHistoryFromLocalStorage();
-    }
+  const savedApiKey = localStorage.getItem('apiKey');
+  if (savedApiKey) {
+      apiKeyInput.value = savedApiKey;
+      loadChatSessionsIntoDropdown();
+      loadChatHistoryFromLocalStorage();
+  }
 };
-    
+
 const toggleLoading = (isLoading) => {
-    loadingIndicator.style.display = isLoading ? 'flex' : 'none';
-    sendButton.disabled = isLoading;
-    const deleteButtons = document.querySelectorAll('.delete-msg-btn');
-    const regenerateButtons = document.querySelectorAll('.regenerate-msg-btn');
-    deleteButtons.forEach((button) => {
-    button.disabled = isLoading;
-    });
-    regenerateButtons.forEach((button) => {
-    button.disabled = isLoading;
-    });
+  loadingIndicator.style.display = isLoading ? 'flex' : 'none';
+  sendButton.disabled = isLoading;
+  const deleteButtons = document.querySelectorAll('.delete-msg-btn');
+  const regenerateButtons = document.querySelectorAll('.regenerate-msg-btn');
+  deleteButtons.forEach((button) => {
+  button.disabled = isLoading;
+  });
+  regenerateButtons.forEach((button) => {
+  button.disabled = isLoading;
+  });
 };
 
 apiKeyInput.addEventListener('change', saveApiKeyToLocalStorage);
@@ -482,15 +481,15 @@ const updateImageCounter = () => {
 imageInput.addEventListener('change', updateImageCounter);
 
 const removeAttachments = () => {
-    imageInput.value = '';
-    updateImageCounter();
+  imageInput.value = '';
+  updateImageCounter();
 };
 
 removeAttachmentsButton.addEventListener('click', removeAttachments);
 
 const sendMessageStream = async () => {
-  if (!chat || !apiKeyInput.value) {
-    alert('You must provide an API key and initialize the chat before sending messages.');
+  if (!apiKeyInput.value) {
+    alert('You must provide an API key before sending messages.');
     return;
   }
 
