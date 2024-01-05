@@ -121,40 +121,52 @@ function createRegenerateButton(text, index) {
 }
 
 const addChatSession = () => {
-  const newSessionName = prompt('Enter new session name:');
-  if (newSessionName) {
-    const chatSessionsHistory = JSON.parse(localStorage.getItem('chatHistory') || defaultChatHistory);
-    if (chatSessionsHistory[newSessionName]) {
-      alert('Session already exists.');
-      return;
+  const chatSessionsHistory = JSON.parse(localStorage.getItem('chatHistory') || defaultChatHistory);
+  let newSessionNumber = 1;
+  
+  Object.keys(chatSessionsHistory).forEach((sessionName) => {
+    const sessionNameMatch = sessionName.match(/^Session (\d+)$/);
+    if (sessionNameMatch) {
+      const currentNumber = parseInt(sessionNameMatch[1], 10);
+      if (currentNumber >= newSessionNumber) {
+        newSessionNumber = currentNumber + 1;
+      }
     }
-    chatSessionsHistory[newSessionName] = [];
-    localStorage.setItem('chatHistory', JSON.stringify(chatSessionsHistory));
-    currentSession = newSessionName;
-    loadChatSessionsIntoDropdown();
-    loadChatHistoryFromLocalStorage();
-    renderChat();
-  }
+  });
+  
+  const newSessionName = `Session ${newSessionNumber}`;
+  
+  chatSessionsHistory[newSessionName] = [];
+  localStorage.setItem('chatHistory', JSON.stringify(chatSessionsHistory));
+  currentSession = newSessionName;
+  loadChatSessionsIntoDropdown();
+  loadChatHistoryFromLocalStorage();
+  saveCurrentSessionToLocalStorage();
+  renderChat();
 };
 
 const renameChatSession = () => {
   if (currentSession === 'default') {
     alert('You can\'t rename the default session.');
   } else {
-  const newSessionName = prompt('Enter new session name:');
-  if (newSessionName) {
-    const chatSessionsHistory = JSON.parse(localStorage.getItem('chatHistory') || defaultChatHistory);
-    if (chatSessionsHistory[newSessionName]) {
-      alert('Session already exists.');
-      return;
+    const newSessionName = prompt('Enter new session name:', currentSession);
+    if (newSessionName && newSessionName !== currentSession) {
+      const chatSessionsHistory = JSON.parse(localStorage.getItem('chatHistory') || defaultChatHistory);
+      if (chatSessionsHistory[newSessionName]) {
+        alert('Session already exists.');
+        return;
+      }
+      chatSessionsHistory[newSessionName] = chatSessionsHistory[currentSession];
+      delete chatSessionsHistory[currentSession];
+      localStorage.setItem('chatHistory', JSON.stringify(chatSessionsHistory));
+      currentSession = newSessionName;
+      loadChatSessionsIntoDropdown();
+      saveCurrentSessionToLocalStorage();
+    } else if (newSessionName) {
+      alert('The new session name must be different from the current name.');
     }
-    chatSessionsHistory[newSessionName] = chatSessionsHistory[currentSession];
-    delete chatSessionsHistory[currentSession];
-    localStorage.setItem('chatHistory', JSON.stringify(chatSessionsHistory));
-    currentSession = newSessionName;
-    loadChatSessionsIntoDropdown();
   }
-}};
+};
 
 const deleteChatSession = () => {
   if (currentSession === 'default') {
@@ -173,8 +185,22 @@ const deleteChatSession = () => {
       currentSession = 'default';
       loadChatSessionsIntoDropdown();
       loadChatHistoryFromLocalStorage();
+      saveCurrentSessionToLocalStorage();
       renderChat();
     }
+  }
+};
+
+const saveCurrentSessionToLocalStorage = () => {
+  localStorage.setItem('currentSession', currentSession);
+};
+
+const loadCurrentSessionFromLocalStorage = () => {
+  const savedSession = localStorage.getItem('currentSession');
+  if (savedSession) {
+    currentSession = savedSession;
+    loadChatHistoryFromLocalStorage();
+    loadChatSessionsIntoDropdown();
   }
 };
 
@@ -193,6 +219,7 @@ const loadChatSessionsIntoDropdown = () => {
 
 document.getElementById('chatSessions').addEventListener('change', e => {
   currentSession = e.target.value;
+  saveCurrentSessionToLocalStorage();
   loadChatHistoryFromLocalStorage();
   renderChat();
 });
@@ -204,7 +231,9 @@ document.getElementById('deleteSession').addEventListener('click', deleteChatSes
 document.addEventListener('DOMContentLoaded', () => {
   loadGenerationConfigFromLocalStorage();
   loadApiKeyFromLocalStorage();
+  loadCurrentSessionFromLocalStorage();
 });
+
 
 const saveChatToLocalStorage = async () => {
   const chatSessionsHistory = JSON.parse(localStorage.getItem('chatHistory') || defaultChatHistory);
