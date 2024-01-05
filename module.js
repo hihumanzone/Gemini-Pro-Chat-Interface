@@ -15,34 +15,6 @@ const imageInput = document.getElementById('imageInput');
 const uploadImageBtn = document.getElementById('uploadImageBtn');
 const removeAttachmentsButton = document.getElementById('removeAttachments');
 
-document.addEventListener('DOMContentLoaded', () => {
-  loadGenerationConfigFromLocalStorage();
-  loadApiKeyFromLocalStorage();
-});
-
-document.getElementById('chatSessions').addEventListener('change', e => {
-  currentSession = e.target.value;
-  loadChatHistoryFromLocalStorage();
-  renderChat();
-});
-document.getElementById('addSession').addEventListener('click', addChatSession);
-document.getElementById('renameSession').addEventListener('click', renameChatSession);
-document.getElementById('deleteSession').addEventListener('click', deleteChatSession);
-document.getElementById('maxOutputTokens').addEventListener('input', updateGenerationConfig);
-document.getElementById('temperature').addEventListener('input', updateGenerationConfig);
-document.getElementById('topP').addEventListener('input', updateGenerationConfig);
-document.getElementById('topK').addEventListener('input', updateGenerationConfig);
-document.addEventListener('DOMContentLoaded', () => {
-  loadGenerationConfigFromLocalStorage();
-  loadApiKeyFromLocalStorage();
-});
-document.getElementById('resetGenConfig').addEventListener('click', resetGenerationConfigToDefault);
-apiKeyInput.addEventListener('change', saveApiKeyToLocalStorage);
-apiKeyInput.addEventListener('change', initializeChat);
-imageInput.addEventListener('change', updateImageCounter);
-sendButton.addEventListener('click', sendMessageStream);
-userInput.addEventListener('input', () => adjustTextareaHeight(userInput));
-
 async function fileToGenerativePart(file) {
   return new Promise((resolve) => {
     const reader = new FileReader();
@@ -219,6 +191,21 @@ const loadChatSessionsIntoDropdown = () => {
   chatSessionsDropdown.value = currentSession;
 };
 
+document.getElementById('chatSessions').addEventListener('change', e => {
+  currentSession = e.target.value;
+  loadChatHistoryFromLocalStorage();
+  renderChat();
+});
+
+document.getElementById('addSession').addEventListener('click', addChatSession);
+document.getElementById('renameSession').addEventListener('click', renameChatSession);
+document.getElementById('deleteSession').addEventListener('click', deleteChatSession);
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadGenerationConfigFromLocalStorage();
+  loadApiKeyFromLocalStorage();
+});
+
 const saveChatToLocalStorage = async () => {
   const chatSessionsHistory = JSON.parse(localStorage.getItem('chatHistory') || defaultChatHistory);
   const chatHistoryWithBase64 = await Promise.all(chatHistory.map(async (message) => {
@@ -338,6 +325,11 @@ function updateGenerationConfig(event) {
   initializeChat();
 }
 
+document.getElementById('maxOutputTokens').addEventListener('input', updateGenerationConfig);
+document.getElementById('temperature').addEventListener('input', updateGenerationConfig);
+document.getElementById('topP').addEventListener('input', updateGenerationConfig);
+document.getElementById('topK').addEventListener('input', updateGenerationConfig);
+
 function resetGenerationConfigToDefault() {
   generationConfig.maxOutputTokens = 16384;
   generationConfig.temperature = 0.9;
@@ -346,6 +338,8 @@ function resetGenerationConfigToDefault() {
   updateSliderUI();
   saveGenerationConfigToLocalStorage();
 }
+
+document.getElementById('resetGenConfig').addEventListener('click', resetGenerationConfigToDefault);
 
 async function initializeChat() {
     if (apiKeyInput.value) {
@@ -437,6 +431,9 @@ const toggleLoading = (isLoading) => {
   });
 };
 
+apiKeyInput.addEventListener('change', saveApiKeyToLocalStorage);
+apiKeyInput.addEventListener('change', initializeChat);
+
 const displayImagePreviews = (files) => {
   const imagePreviewContainer = document.getElementById('image-preview-container');
   imagePreviewContainer.innerHTML = '';
@@ -481,10 +478,14 @@ const updateImageCounter = () => {
   displayImagePreviews(imageInput.files);
 };
 
+imageInput.addEventListener('change', updateImageCounter);
+
 const removeAttachments = () => {
   imageInput.value = '';
   updateImageCounter();
 };
+
+removeAttachmentsButton.addEventListener('click', removeAttachments);
 
 const sendMessageStream = async () => {
   if (!apiKeyInput.value) {
@@ -553,6 +554,8 @@ const sendMessageStream = async () => {
   }
 };
 
+sendButton.addEventListener('click', sendMessageStream);
+
 document.querySelector('button#toggle-manage').addEventListener('click', () => {
   const manageContainer = document.getElementById('manage-container');
   const chatContainer = document.getElementById('chat');
@@ -568,3 +571,5 @@ const adjustTextareaHeight = (element) => {
         element.style.height = element.scrollHeight + 'px';
     }
 };
+
+userInput.addEventListener('input', () => adjustTextareaHeight(userInput));
