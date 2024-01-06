@@ -101,14 +101,17 @@ body {
 .message {
   max-width: 80%;
   padding: 0 10px;
-  border-radius: 20px;
-  background-color: #1f1f1f;
+  border-radius: 0 15px 15px 15px;
   display: inline-block;
-  box-shadow: 0 2px 30px rgba(255, 255, 255, 0.15);
+  background-color: rgba(84, 163, 255, 0.2);
+  box-shadow: 0 2px 30px rgba(84, 163, 255, 0.2);
+  color: #fff;
 }
 .message.user {
-  background-color: #112324;
-  box-shadow: 0 2px 30px rgba(125, 248, 255, 0.2);
+  background-color: rgba(38, 90, 96, 0.45);
+  box-shadow: 0 2px 30px rgba(125, 248, 255, 0.18);
+  color: #e0e0e0;
+  border-radius: 15px 0 15px 15px;
 }
 .message-container {
   display: flex;
