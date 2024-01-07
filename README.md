@@ -39,15 +39,9 @@ Check out the live demo [here](https://geminihzhui.vercel.app/).
 
 ## Installation and Usage
 
-To get started, clone this repository and open the `index.html` file in your preferred modern web browser.
+To get started, download this repository and open the `index.html` file in your preferred modern web browser.
 
-```bash
-git clone https://github.com/hihumanzone/gemini-pro-chat-interface.git
-cd gemini-pro-chat-interface
-# Open the index.html in your browser
-```
-
-Before using the chat interface, you need to enter your API key in the input field provided. The application allows you to clear chat history and start a new session as needed.
+Before using the chat interface, you need to enter your API key in the input field provided. The application allows you start a new session as needed.
 
 ## Contributing
 
