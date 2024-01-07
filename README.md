@@ -18,8 +18,8 @@ Experience the Gemini Pro Chat Interface: [Live Demo](https://geminihzhui.vercel
 
 Follow these simple steps to get the chat interface running on your machine:
 
-1. Download the [full.html](https://github.com/hihumanzone/Gemini-Pro-Chat-Interface/blob/main/full.html) file from [GitHub](https://github.com/hihumanzone/Gemini-Pro-Chat-Interface).
-3. Open the `full.html` file in your favorite web browser.
+1. Visit the GitHub repository and download the `full.html` file directly from this link: [https://github.com/hihumanzone/Gemini-Pro-Chat-Interface/blob/main/full.html](https://github.com/hihumanzone/Gemini-Pro-Chat-Interface/blob/main/full.html).
+2. Locate the downloaded `full.html` file on your computer and open it using your preferred web browser to start using the chat interface.
 
 ## API Key
 
