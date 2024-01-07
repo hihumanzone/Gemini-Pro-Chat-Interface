@@ -7,7 +7,6 @@ Crafted for seamless interaction with the Gemini Pro AI model by Makersuite, thi
 - **Image Integration**: Send conversations with images for a rich chatting experience.
 - **Session Management**: Juggle multiple chat threads with an easy-to-use interface.
 - **AI Customization**: Modify parameters for more controlled AI interactions.
-- **Safety Settings**: Pre-set options to minimize the risk of generating harmful content.
 - **Local Storage**: Keep your chat history securely retained in your browser.
 - **Interactive Experience**: An intuitive interface, complete with session selectors and visual prompts for image attachments.
 
