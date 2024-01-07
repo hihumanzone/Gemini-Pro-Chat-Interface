@@ -10,7 +10,7 @@ Welcome to the GitHub repository for the Gemini Pro Chat Interface project. This
 
 ### Finished
 - a better implementation for sanitization
-- chat sessions support (new)
+- chat sessions support
 - save chat to local storage support
 - latex support
 - markdown support
