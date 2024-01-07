@@ -1,64 +1,56 @@
 # Gemini Pro Chat Interface
 
-Welcome to the GitHub repository for the Gemini Pro Chat Interface project. This application provides an elegant and intuitive chat interface for interacting with the Gemini Pro model.
-
-## To-Do list
-
-### Not finished
-- refactor CSS code
-- refactor javascript code
-
-### Finished
-- a better implementation for sanitization
-- chat sessions support
-- save chat to local storage support
-- latex support
-- markdown support
-- images support
-- regenerate butten support
-- sanitize support
-- copy and delete support
-
-## Live Demo
-
-Check out the live demo [here](https://geminihzhui.vercel.app/).
+Crafted for seamless interaction with the Gemini Pro AI model by Makersuite, this chat interface provides the ability to include images within conversation threads, handle multiple chat sessions, and tune AI response parameters, all while upholding content safety through integrated harm reduction settings.
 
 ## Features
 
-- Elegant and modern chat UI.
-- Real-time interaction with the Gemini Pro model.
-- Copy and delete messages functionalities.
-- Responsive design for portrait screen orientation.
-- KaTeX support for rendering mathematical expressions.
-- Markdown support for formatted text.
-- Local storage of API key for easy reuse.
+- **Image Integration**: Send conversations with images for a rich chatting experience.
+- **Session Management**: Juggle multiple chat threads with an easy-to-use interface.
+- **AI Customization**: Modify parameters for more controlled AI interactions.
+- **Safety Settings**: Pre-set options to minimize the risk of generating harmful content.
+- **Local Storage**: Keep your chat history securely retained in your browser.
+- **Interactive Experience**: An intuitive interface, complete with session selectors and visual prompts for image attachments.
 
-## Screenshot
+## Live Demo
 
-![](./img/ss2.gif)
+Experience the Gemini Pro Chat Interface: [Live Demo](https://geminihzhui.vercel.app/)
 
-## Installation and Usage
+## Installation
 
-To get started, download this repository and open the `index.html` file in your preferred modern web browser.
+Follow these simple steps to get the chat interface running on your machine:
 
-Before using the chat interface, you need to enter your API key in the input field provided. The application allows you start a new session as needed.
+1. Download the repository as a ZIP file from [GitHub](https://github.com/hihumanzone/Gemini-Pro-Chat-Interface).
+2. Unzip the file to a directory of your choice.
+3. Open the `index.html` file in your favorite web browser.
+
+## API Key
+
+Before you start chatting with the AI, you will need an API key from Makersuite. Get yours here: [Get API Key](https://makersuite.google.com/app/apikey)
+
+## Preview
+
+Here's a glimpse of what the chat interface looks like:
+
+![Gemini Chat Interface GIF](./img/ss2.gif)
 
 ## Contributing
 
-Contributions are welcome! Feel free to submit pull requests, create issues, or suggest improvements to the project.
+We welcome contributions to enhance the Gemini Pro Chat Interface. If you'd like to contribute, feel free to fork the repository and submit pull requests.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
-
-## Author
-
-This project is developed and maintained by **hihumanzone**. You can find more of my work at my [GitHub profile](https://github.com/hihumanzone).
+This project is open-source and available under the MIT License. See the [LICENSE.md](LICENSE.md) file for more information.
 
 ## Acknowledgments
 
-- Google Generative AI for providing the chat API.
-- Vercel for hosting the live demo.
-- KaTeX and Marked for rendering math and markdown content.
+- Kudos to the Makersuite team for the API accessibility.
+- Gratitude to all contributors who help improve this tool.
 
-If you experience any issues or have any questions, please feel free to file an issue on GitHub. Enjoy interacting with your AI companions!
+## Todo list
+- refactor javascript
+
+---
+
+If you encounter any issues or have suggestions, please create an issue on the GitHub repository. Your input is valuable in making this a better tool for everyone.
+
+Begin your adventure with Gemini Pro!
